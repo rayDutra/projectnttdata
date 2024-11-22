@@ -4,6 +4,7 @@ import com.nttdata.application.mapper.UserMapper;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "bearer-key")
 public class UserController {
 
     @Autowired
