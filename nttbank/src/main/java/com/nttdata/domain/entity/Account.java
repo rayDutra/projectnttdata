@@ -1,5 +1,7 @@
 package com.nttdata.domain.entity;
 
+import com.nttdata.domain.enums.AccountType;
+import com.nttdata.domain.enums.TransactionType;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -12,7 +14,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
     private Double balance = 0.0;
 
     private boolean active = true;
@@ -26,7 +29,7 @@ public class Account {
 
     public Account() {}
 
-    public Account(String type, User user) {
+    public Account(AccountType type, User user) {
         this.type = type;
         this.user = user;
     }
@@ -39,11 +42,11 @@ public class Account {
         this.id = id;
     }
 
-    public String getType() {
+    public AccountType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AccountType type) {
         this.type = type;
     }
 

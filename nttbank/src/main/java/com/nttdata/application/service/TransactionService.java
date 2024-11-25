@@ -2,6 +2,7 @@ package com.nttdata.application.service;
 
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
+import com.nttdata.domain.enums.TransactionCategory;
 import com.nttdata.domain.enums.TransactionType;
 import com.nttdata.dto.TransactionDTO;
 import com.nttdata.infrastructure.repository.AccountRepository;
@@ -35,7 +36,8 @@ public class TransactionService {
     public Transaction update(Long id, TransactionDTO transactionDTO) {
         Transaction transaction = findById(id);
         if (transaction != null) {
-            TransactionType type = TransactionType.valueOf(transactionDTO.getType());
+            transaction.setType(transactionDTO.getType());
+            transaction.setCategory(transactionDTO.getCategory());
             transaction.setAmount(transactionDTO.getAmount());
             transaction.setDate(transactionDTO.getDate());
             return transactionRepository.save(transaction);

@@ -1,6 +1,7 @@
 package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.UserMapper;
+import com.nttdata.application.service.ExcelService;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
@@ -12,8 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.data.domain.Pageable;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,11 +26,33 @@ import org.springframework.data.domain.Pageable;
 public class UserController {
 
     @Autowired
+    private ExcelService excelService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            // Processar o arquivo Excel
+            List<User> users = excelService.parseExcelFile(file);
+
+            // Codificar as senhas antes de salvar
+            for (User user : users) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
+            // Salvar todos os usuários no banco
+            userRepository.saveAll(users);
+
+            return ResponseEntity.ok("Usuários cadastrados com sucesso!");
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Erro ao processar o arquivo: " + e.getMessage());
+        }
+    }
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
         User user = UserMapper.toEntity(userDTO);

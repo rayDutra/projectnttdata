@@ -1,5 +1,6 @@
 package com.nttdata.domain.entity;
 
+import com.nttdata.domain.enums.TransactionCategory;
 import com.nttdata.domain.enums.TransactionType;
 import jakarta.persistence.*;
 
@@ -16,6 +17,8 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionCategory category;
     private Double amount;
 
     private Date date;
@@ -26,8 +29,9 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(TransactionType type, Double amount, Date date, Account account) {
+    public Transaction(TransactionType type, TransactionCategory category, Double amount, Date date, Account account) {
         this.type = type;
+        this.category = category;
         this.amount = amount;
         this.date = date;
         this.account = account;
@@ -72,5 +76,13 @@ public class Transaction {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public TransactionCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TransactionCategory category) {
+        this.category = category;
     }
 }

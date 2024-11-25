@@ -2,7 +2,6 @@ package com.nttdata.application.mapper;
 
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
-import com.nttdata.domain.enums.TransactionType;
 import com.nttdata.dto.TransactionDTO;
 
 public class TransactionMapper {
@@ -15,22 +14,21 @@ public class TransactionMapper {
 
         return new TransactionDTO(
             transaction.getId(),
-            transaction.getType().name(),
+            transaction.getType(),
+            transaction.getCategory(),
             transaction.getAmount(),
             transaction.getDate(),
             accountId
         );
     }
 
-
     public static Transaction toEntity(TransactionDTO transactionDTO, Account account) {
         return new Transaction(
-            TransactionType.valueOf(transactionDTO.getType()),
+            transactionDTO.getType(),
+            transactionDTO.getCategory(),
             transactionDTO.getAmount(),
             transactionDTO.getDate(),
             account
         );
     }
 }
-
-
