@@ -2,6 +2,7 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.TransactionMapper;
 import com.nttdata.application.service.AccountService;
+import com.nttdata.application.service.ExcelService;
 import com.nttdata.application.service.TransactionService;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
@@ -9,9 +10,13 @@ import com.nttdata.dto.TransactionDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.io.ByteArrayOutputStream;
 
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,9 @@ public class TransactionController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private ExcelService excelService;
 
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
@@ -76,5 +84,12 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TransactionDTO>> getTransactionsByUser(@PathVariable Long userId) {
+        List<TransactionDTO> transactionsDTO = transactionService.findByUserId(userId).stream()
+            .map(TransactionMapper::toDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(transactionsDTO);
+    }
 
 }

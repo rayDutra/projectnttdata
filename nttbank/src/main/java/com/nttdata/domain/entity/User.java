@@ -5,9 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Table(name = "users")
 @Entity
@@ -33,6 +31,8 @@ public class User implements UserDetails {
 
     private boolean active = true;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Account> accounts = new HashSet<>();
     public User() {}
 
     public User(Long id, String name, String email, String login, String password, Date date) {
@@ -96,6 +96,14 @@ public class User implements UserDetails {
         this.date = date;
     }
 
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<Account> accounts) {
+        this.accounts = accounts;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -124,5 +132,12 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return active;
+    }
+    public List<Transaction> getTransactions() {
+        List<Transaction> allTransactions = new ArrayList<>();
+        for (Account account : accounts) {
+            allTransactions.addAll(account.getTransactions());
+        }
+        return allTransactions;
     }
 }

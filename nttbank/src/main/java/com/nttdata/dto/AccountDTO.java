@@ -2,6 +2,8 @@ package com.nttdata.dto;
 
 import com.nttdata.domain.enums.AccountType;
 
+import java.util.List;
+
 public class AccountDTO {
 
     private Long id;
@@ -9,13 +11,16 @@ public class AccountDTO {
     private Double balance;
     private Long userId;
 
+    private List<TransactionDTO> transactions;
+
     public AccountDTO() {}
 
-    public AccountDTO(Long id, AccountType type, Double balance, Long userId) {
+    public AccountDTO(Long id, AccountType type, Double balance, Long userId, List<TransactionDTO> transactions) {
         this.id = id;
         this.type = type;
         this.balance = balance;
         this.userId = userId;
+        this.transactions = transactions;
     }
 
     public AccountType getType() {
@@ -49,5 +54,13 @@ public class AccountDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<TransactionDTO> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<TransactionDTO> transactions) {
+        this.transactions = transactions;
     }
 }

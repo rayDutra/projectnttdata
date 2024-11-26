@@ -3,6 +3,7 @@ package com.nttdata.dto;
 import com.nttdata.domain.entity.User;
 
 import java.util.Date;
+import java.util.List;
 
 public class UserDTO {
     private Long id;
@@ -13,15 +14,18 @@ public class UserDTO {
     private String password;
     private Date date;
 
+    private List<AccountDTO> accounts;
+
     public UserDTO() {}
 
-    public UserDTO(Long id, String name, String email, String login, String password, Date date) {
+    public UserDTO(Long id, String name, String email, String login, String password, Date date, List<AccountDTO> accounts) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.login = login;
         this.password = password;
         this.date = date;
+        this.accounts = accounts;
     }
 
     public UserDTO(User user) {
@@ -74,4 +78,12 @@ public class UserDTO {
     public void setDate(Date date) {
         this.date = date;
     }
+    public List<AccountDTO> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<AccountDTO> accounts) {
+        this.accounts = accounts;
+    }
+
 }

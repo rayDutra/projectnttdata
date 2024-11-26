@@ -3,13 +3,17 @@ package com.nttdata.web.controller;
 import com.nttdata.application.mapper.AccountMapper;
 import com.nttdata.application.service.AccountService;
 import com.nttdata.application.service.UserService;
+import com.nttdata.domain.entity.Account;
+import com.nttdata.domain.entity.User;
 import com.nttdata.dto.AccountDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,14 +28,32 @@ public class AccountController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO accountDTO) {
-        AccountMapper.setUserService(userService);
+    public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO) {
+        try {
+            User user = userService.findById(accountDTO.getUserId());
 
-        var account = AccountMapper.toEntity(accountDTO);
-        var savedAccount = accountService.save(account);
-        var accountResponse = AccountMapper.toDTO(savedAccount);
-        return ResponseEntity.ok(accountResponse);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Usuário não encontrado"));
+            }
+            boolean accountExists = accountService.existsByUserIdAndType(user.getId(), accountDTO.getType());
+            if (accountExists) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário."));
+            }
+            Account savedAccount = accountService.save(user, accountDTO);
+            AccountDTO accountResponse = AccountMapper.toDTO(savedAccount);
+
+            return ResponseEntity.ok(accountResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Erro: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Erro interno do servidor"));
+        }
     }
+
     @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> accountsDTO = accountService.findAll().stream()

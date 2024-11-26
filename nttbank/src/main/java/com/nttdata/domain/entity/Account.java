@@ -4,7 +4,9 @@ import com.nttdata.domain.enums.AccountType;
 import com.nttdata.domain.enums.TransactionType;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "accounts")
 @Entity

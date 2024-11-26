@@ -2,6 +2,8 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.UserMapper;
 import com.nttdata.application.service.ExcelService;
+import com.nttdata.application.service.UserService;
+import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
@@ -10,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,18 +39,16 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            // Processar o arquivo Excel
             List<User> users = excelService.parseExcelFile(file);
-
-            // Codificar as senhas antes de salvar
             for (User user : users) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
-
-            // Salvar todos os usuários no banco
             userRepository.saveAll(users);
 
             return ResponseEntity.ok("Usuários cadastrados com sucesso!");
@@ -90,5 +93,28 @@ public class UserController {
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
         return ResponseEntity.ok(UserMapper.toDTO(user));
     }
+
+    @GetMapping("/list/{id}")
+    public ResponseEntity<UserDTO> getUserWithDetails(@PathVariable Long id) {
+        User user = userService.getUserWithDetails(id);
+        UserDTO userDTO = UserMapper.toDTO(user);
+        return ResponseEntity.ok(userDTO);
+    }
+    @GetMapping("/{id}/export")
+    public ResponseEntity<byte[]> exportUserTransactionsToExcel(@PathVariable Long id) {
+        try {
+            User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            List<Transaction> transactions = user.getTransactions();
+            ByteArrayOutputStream byteArrayOutputStream = excelService.generateExpenseAnalysisExcel(transactions);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=transactions_report.xlsx");
+            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 
 }
