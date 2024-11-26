@@ -35,7 +35,6 @@ public class Account {
         this.type = type;
         this.user = user;
     }
-
     public Long getId() {
         return id;
     }

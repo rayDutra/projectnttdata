@@ -74,7 +74,6 @@ public class UserMapper {
             transaction.getAccount() != null ? transaction.getAccount().getId() : null
         );
     }
-
     public static void updateEntityFromDTO(UserDTO userDTO, User user) {
         if (userDTO.getName() != null) {
             user.setName(userDTO.getName());

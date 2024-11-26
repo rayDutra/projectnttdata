@@ -31,9 +31,6 @@ public class TransactionController {
     @Autowired
     private AccountService accountService;
 
-    @Autowired
-    private ExcelService excelService;
-
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         Account account = accountService.findById(transactionDTO.getAccountId());
@@ -84,12 +81,5 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsByUser(@PathVariable Long userId) {
-        List<TransactionDTO> transactionsDTO = transactionService.findByUserId(userId).stream()
-            .map(TransactionMapper::toDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(transactionsDTO);
-    }
 
 }

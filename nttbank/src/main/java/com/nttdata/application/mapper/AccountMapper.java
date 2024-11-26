@@ -37,7 +37,6 @@ public class AccountMapper {
         );
     }
 
-
     public static Account toEntity(AccountDTO accountDTO) {
         if (accountDTO == null) {
             return null;

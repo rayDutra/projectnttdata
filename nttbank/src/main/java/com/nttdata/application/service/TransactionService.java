@@ -85,9 +85,4 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> findByUserId(Long userId) {
-        return transactionRepository.findByUserId(userId);
-    }
-
-
 }

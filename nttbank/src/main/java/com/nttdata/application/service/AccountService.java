@@ -58,7 +58,6 @@ public class AccountService {
         }
         return null;
     }
-
     public void deactivate(Long id) {
         Account account = findById(id);
         if (account != null) {

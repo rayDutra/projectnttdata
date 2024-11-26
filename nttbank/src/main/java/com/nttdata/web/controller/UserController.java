@@ -87,14 +87,8 @@ public class UserController {
         user.deactivate();
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getById(@PathVariable Long id) {
-        var user = userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        return ResponseEntity.ok(UserMapper.toDTO(user));
-    }
 
-    @GetMapping("/list/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserWithDetails(@PathVariable Long id) {
         User user = userService.getUserWithDetails(id);
         UserDTO userDTO = UserMapper.toDTO(user);
@@ -115,6 +109,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-
 }

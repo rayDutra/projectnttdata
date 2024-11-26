@@ -22,7 +22,6 @@ public class AccountDTO {
         this.userId = userId;
         this.transactions = transactions;
     }
-
     public AccountType getType() {
         return type;
     }

@@ -6,7 +6,6 @@ public class TokenJWT {
 
     public TokenJWT() {
     }
-
     public TokenJWT(String token) {
         Token = token;
     }

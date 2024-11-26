@@ -30,7 +30,6 @@ public class TokenService {
             throw new RuntimeException("Erro ao gerar token JWT", exception);
         }
     }
-
     public String getSubject(String tokenJWT) {
         try {
             var algoritmo = Algorithm.HMAC256(secret);

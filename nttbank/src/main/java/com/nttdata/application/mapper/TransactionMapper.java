@@ -21,7 +21,6 @@ public class TransactionMapper {
             accountId
         );
     }
-
     public static Transaction toEntity(TransactionDTO transactionDTO, Account account) {
         return new Transaction(
             transactionDTO.getType(),
