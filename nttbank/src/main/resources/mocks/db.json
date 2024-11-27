@@ -1,0 +1,134 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "Maria Silva",
+            "email": "maria@email.com",
+            "login": "maria.silva",
+            "password": "senha123",
+            "date": "2024-01-01T10:00:00.000Z",
+            "active": true
+        },
+        {
+            "id": 2,
+            "name": "João Souza",
+            "email": "joao@email.com",
+            "login": "joao.souza",
+            "password": "senha456",
+            "date": "2024-02-01T10:00:00.000Z",
+            "active": true
+        },
+        {
+            "id": 3,
+            "name": "Ana Pereira",
+            "email": "ana@email.com",
+            "login": "ana.pereira",
+            "password": "senha789",
+            "date": "2024-03-01T10:00:00.000Z",
+            "active": false
+        }
+    ],
+    "accounts": [
+        {
+            "id": 1,
+            "type": "CORRENTE",
+            "balance": 1500.0,
+            "active": true,
+            "userId": 1
+        },
+        {
+            "id": 2,
+            "type": "POUPANÇA",
+            "balance": 2500.0,
+            "active": true,
+            "userId": 1
+        },
+        {
+            "id": 3,
+            "type": "EMPRESARIAL",
+            "balance": 8000.0,
+            "active": true,
+            "userId": 2
+        },
+        {
+            "id": 4,
+            "type": "CORRENTE",
+            "balance": 4500.0,
+            "active": false,
+            "userId": 3
+        },
+        {
+            "id": 5,
+            "type": "POUPANÇA",
+            "balance": 5200.0,
+            "active": true,
+            "userId": 3
+        }
+    ],
+    "transactions": [
+        {
+            "id": 1,
+            "type": "DEPOSITO",
+            "category": "OUTROS",
+            "amount": 500.0,
+            "date": "2024-11-13T10:00:00.000Z",
+            "accountId": 1
+        },
+        {
+            "id": 2,
+            "type": "SAQUE",
+            "category": "TRANSPORTE",
+            "amount": 200.0,
+            "date": "2024-11-14T11:30:00.000Z",
+            "accountId": 1
+        },
+        {
+            "id": 3,
+            "type": "TRANSFERENCIA",
+            "category": "LAZER",
+            "amount": 1000.0,
+            "date": "2024-11-15T15:00:00.000Z",
+            "accountId": 2
+        },
+        {
+            "id": 4,
+            "type": "PIX",
+            "category": "ALIMENTAÇAO",
+            "amount": 300.0,
+            "date": "2024-11-16T12:45:00.000Z",
+            "accountId": 3
+        },
+        {
+            "id": 5,
+            "type": "BOLETO",
+            "category": "OUTROS",
+            "amount": 1200.0,
+            "date": "2024-11-17T08:00:00.000Z",
+            "accountId": 3
+        },
+        {
+            "id": 6,
+            "type": "DEPOSITO",
+            "category": "SALARIO",
+            "amount": 3000.0,
+            "date": "2024-11-18T09:00:00.000Z",
+            "accountId": 4
+        },
+        {
+            "id": 7,
+            "type": "SAQUE",
+            "category": "SAUDE",
+            "amount": 150.0,
+            "date": "2024-11-19T13:15:00.000Z",
+            "accountId": 4
+        },
+        {
+            "id": 8,
+            "type": "TRANSFERENCIA",
+            "category": "ALIMENTAÇAO",
+            "amount": 500.0,
+            "date": "2024-11-20T18:45:00.000Z",
+            "accountId": 5
+        }
+    ]
+}

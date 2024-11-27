@@ -2,7 +2,6 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.TransactionMapper;
 import com.nttdata.application.service.AccountService;
-import com.nttdata.application.service.ExcelService;
 import com.nttdata.application.service.TransactionService;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
@@ -10,13 +9,9 @@ import com.nttdata.dto.TransactionDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.io.ByteArrayOutputStream;
 
-
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,17 +29,14 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         Account account = accountService.findById(transactionDTO.getAccountId());
+
         if (account == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         Transaction transaction = TransactionMapper.toEntity(transactionDTO, account);
-        try {
-            Transaction processedTransaction = transactionService.processTransaction(transaction);
-            TransactionDTO transactionResponse = TransactionMapper.toDTO(processedTransaction);
-            return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        Transaction processedTransaction = transactionService.processTransaction(transaction);
+        TransactionDTO transactionResponse = TransactionMapper.toDTO(processedTransaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
     }
 
     @GetMapping
@@ -52,6 +44,7 @@ public class TransactionController {
         List<TransactionDTO> transactionsDTO = transactionService.findAll().stream()
             .map(TransactionMapper::toDTO)
             .collect(Collectors.toList());
+
         return ResponseEntity.ok(transactionsDTO);
     }
 
@@ -80,6 +73,4 @@ public class TransactionController {
         transactionService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

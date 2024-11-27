@@ -56,7 +56,6 @@ public class TransactionService {
         if (account == null || account.getId() == null) {
             throw new IllegalArgumentException("Conta associada à transação não encontrada.");
         }
-
         switch (transaction.getType()) {
             case DEPOSITO:
                 if (transaction.getAmount() <= 0) {
@@ -69,8 +68,32 @@ public class TransactionService {
                 if (transaction.getAmount() <= 0) {
                     throw new IllegalArgumentException("O valor do saque deve ser maior que zero.");
                 }
-                if (account.getBalance() < transaction.getAmount()) {
-                    throw new IllegalStateException("Saldo insuficiente.");
+                if (account.getBalance() < transaction.getAmount() + 5) {
+                    throw new IllegalStateException("Saldo insuficiente para realizar o saque com desconto.");
+                }
+                account.setBalance(account.getBalance() - (transaction.getAmount() + 5));
+                break;
+
+            case TRANSFERENCIA:
+                if (transaction.getAmount() <= 0) {
+                    throw new IllegalArgumentException("O valor da transferência deve ser maior que zero.");
+                }
+                if (account.getBalance() < transaction.getAmount() + 10) {
+                    throw new IllegalStateException("Saldo insuficiente para realizar a transferência com desconto.");
+                }
+                account.setBalance(account.getBalance() - (transaction.getAmount() + 10));
+                break;
+
+            case PIX:
+                if (transaction.getAmount() <= 0) {
+                    throw new IllegalArgumentException("O valor do PIX deve ser maior que zero.");
+                }
+                account.setBalance(account.getBalance() - transaction.getAmount());
+                break;
+
+            case BOLETO:
+                if (transaction.getAmount() <= 0) {
+                    throw new IllegalArgumentException("O valor do boleto deve ser maior que zero.");
                 }
                 account.setBalance(account.getBalance() - transaction.getAmount());
                 break;
@@ -84,5 +107,7 @@ public class TransactionService {
         transaction.setDate(new Date());
         return transactionRepository.save(transaction);
     }
+
+
 
 }
