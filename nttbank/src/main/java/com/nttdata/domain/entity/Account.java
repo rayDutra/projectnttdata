@@ -1,15 +1,11 @@
 package com.nttdata.domain.entity;
 
 import com.nttdata.domain.enums.AccountType;
-import com.nttdata.domain.enums.TransactionType;
 import jakarta.persistence.*;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Table(name = "accounts")
 @Entity
+@Table(name = "accounts")
 public class Account {
 
     @Id
@@ -29,15 +25,13 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
-    public Account() {}
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private CurrencyBalance currencyBalance;
 
-    public Account(AccountType type, User user) {
-        this.type = type;
-        this.user = user;
-    }
     public Long getId() {
         return id;
     }
+
 
     public void setId(Long id) {
         this.id = id;
@@ -81,6 +75,14 @@ public class Account {
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public CurrencyBalance getCurrencyBalance() {
+        return currencyBalance;
+    }
+
+    public void setCurrencyBalance(CurrencyBalance currencyBalance) {
+        this.currencyBalance = currencyBalance;
     }
 
     public void updateBalance(Double value) {

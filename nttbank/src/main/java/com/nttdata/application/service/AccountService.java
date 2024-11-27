@@ -19,6 +19,19 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private CurrencyConversionService currencyConversionService;
+
+    @Autowired
+    public AccountService(CurrencyConversionService currencyConversionService) {
+        this.currencyConversionService = currencyConversionService;
+    }
+
+    public void updateCurrencyBalance(Account account) {
+        if (account.getBalance() != null) {
+            account.setCurrencyBalance(currencyConversionService.convertToCurrencyBalance(account.getBalance()));
+        }
+    }
     private void validateUniqueAccountType(User user, AccountType accountType) {
         Account existingAccount = accountRepository.findByUserAndType(user, accountType);
         if (existingAccount != null) {
@@ -35,7 +48,6 @@ public class AccountService {
         validateUniqueAccountType(user, accountDTO.getType());
         Account account = AccountMapper.toEntity(accountDTO);
         account.setUser(user);
-
         return accountRepository.save(account);
     }
 
@@ -58,6 +70,7 @@ public class AccountService {
         }
         return null;
     }
+
     public void deactivate(Long id) {
         Account account = findById(id);
         if (account != null) {

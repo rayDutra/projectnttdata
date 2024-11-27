@@ -14,7 +14,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByActiveTrue(Pageable pageable);
-    UserDetails findByLogin(String login);
+
+    Optional<User> findByLogin(String login);
 
     @Query("SELECT u FROM User u " +
         "LEFT JOIN FETCH u.accounts a " +
@@ -22,3 +23,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
         "WHERE u.id = :id")
     Optional<User> findByIdWithAccountsAndTransactions(@Param("id") Long id);
 }
+

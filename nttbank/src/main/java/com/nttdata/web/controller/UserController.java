@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -57,11 +58,15 @@ public class UserController {
         }
     }
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
+        if (userRepository.findByLogin(userDTO.getLogin()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "O login já está em uso."));
+        }
+
         User user = UserMapper.toEntity(userDTO);
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
+
         var uri = uriBuilder.path("/api/users/{id}").buildAndExpand(savedUser.getId()).toUri();
         return ResponseEntity.created(uri).body(UserMapper.toDTO(savedUser));
     }

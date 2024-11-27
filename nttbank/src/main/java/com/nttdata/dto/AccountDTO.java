@@ -10,18 +10,20 @@ public class AccountDTO {
     private AccountType type;
     private Double balance;
     private Long userId;
-
     private List<TransactionDTO> transactions;
+    private CurrencyBalanceDTO currencyBalance;
 
     public AccountDTO() {}
 
-    public AccountDTO(Long id, AccountType type, Double balance, Long userId, List<TransactionDTO> transactions) {
+    public AccountDTO(Long id, AccountType type, Double balance, Long userId, List<TransactionDTO> transactions, CurrencyBalanceDTO currencyBalance) {
         this.id = id;
         this.type = type;
         this.balance = balance;
         this.userId = userId;
         this.transactions = transactions;
+        this.currencyBalance = currencyBalance;
     }
+
     public AccountType getType() {
         return type;
     }
@@ -37,7 +39,6 @@ public class AccountDTO {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public Double getBalance() {
         return balance;
@@ -61,5 +62,13 @@ public class AccountDTO {
 
     public void setTransactions(List<TransactionDTO> transactions) {
         this.transactions = transactions;
+    }
+
+    public CurrencyBalanceDTO getCurrencyBalance() {
+        return currencyBalance;
+    }
+
+    public void setCurrencyBalance(CurrencyBalanceDTO currencyBalance) {
+        this.currencyBalance = currencyBalance;
     }
 }

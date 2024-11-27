@@ -1,6 +1,7 @@
 package com.nttdata.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,24 +16,29 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome é obrigatório.")
     private String name;
 
+    @NotBlank(message = "O e-mail é obrigatório.")
+    @Email(message = "O e-mail deve ser válido.")
     @Column(nullable = false)
     private String email;
 
+    @NotBlank(message = "O login é obrigatório.")
     @Column(nullable = false, unique = true)
     private String login;
 
+    @NotBlank(message = "A senha é obrigatória.")
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private Date date;
 
     private boolean active = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Account> accounts = new HashSet<>();
+
     public User() {}
 
     public User(Long id, String name, String email, String login, String password, Date date) {
@@ -133,6 +139,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return active;
     }
+
     public List<Transaction> getTransactions() {
         List<Transaction> allTransactions = new ArrayList<>();
         for (Account account : accounts) {

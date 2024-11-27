@@ -1,15 +1,22 @@
 package com.nttdata.application.mapper;
 
+import com.nttdata.application.service.CurrencyConversionService;
 import com.nttdata.domain.entity.Account;
+import com.nttdata.domain.entity.CurrencyBalance;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
+import com.nttdata.dto.CurrencyBalanceDTO;
 import com.nttdata.dto.TransactionDTO;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.dto.AccountDTO;
 
 import java.util.stream.Collectors;
 
+import static com.nttdata.application.mapper.AccountMapper.toCurrencyBalanceDTO;
+
 public class UserMapper {
+
+    private static CurrencyConversionService currencyConversionService;
 
     public static User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
@@ -24,7 +31,6 @@ public class UserMapper {
             userDTO.getDate()
         );
     }
-
     public static UserDTO toDTO(User user) {
         if (user == null) {
             return null;
@@ -43,22 +49,22 @@ public class UserMapper {
                 : null
         );
     }
-
     public static AccountDTO toAccountDTO(Account account) {
         if (account == null) {
             return null;
         }
-        return new AccountDTO(
-            account.getId(),
-            account.getType(),
-            account.getBalance(),
-            account.getUser() != null ? account.getUser().getId() : null,
-            account.getTransactions() != null
-                ? account.getTransactions().stream()
-                .map(UserMapper::toTransactionDTO)
-                .collect(Collectors.toList())
-                : null
-        );
+        CurrencyBalance currencyBalance = currencyConversionService.convertToCurrencyBalance(account.getBalance());
+
+        CurrencyBalanceDTO currencyBalanceDTO = toCurrencyBalanceDTO(currencyBalance);
+
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setId(account.getId());
+        accountDTO.setType(account.getType());
+        accountDTO.setBalance(account.getBalance());
+        accountDTO.setUserId(account.getUser() != null ? account.getUser().getId() : null);
+        accountDTO.setCurrencyBalance(currencyBalanceDTO);
+
+        return accountDTO;
     }
 
     public static TransactionDTO toTransactionDTO(Transaction transaction) {
