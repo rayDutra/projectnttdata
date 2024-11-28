@@ -2,16 +2,18 @@ package com.nttdata.application.service;
 
 import com.nttdata.domain.entity.CurrencyBalance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpMethod;
+
+import java.util.Collections;
+import java.util.Map;
 
 @Service
 public class CurrencyConversionService {
 
-    private static final String API_URL = "https://v6.exchangerate-api.com/v6/27091f71d355f60163ee9ecb/latest/"; // URL base corrigida
-
+    private static final String API_URL_TEMPLATE = "https://v6.exchangerate-api.com/v6/27091f71d355f60163ee9ecb/latest/%s";
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -19,28 +21,46 @@ public class CurrencyConversionService {
         this.restTemplate = restTemplate;
     }
 
-    public Double getExchangeRate(String fromCurrency, String toCurrency) {
-        String url = API_URL + fromCurrency;  // A URL base + moeda de origem
+    public Map<String, Double> getExchangeRates(String baseCurrency) {
+        try {
+            String apiUrl = String.format(API_URL_TEMPLATE, baseCurrency);
+            ResponseEntity<ExchangeRateResponse> response = restTemplate.exchange(
+                apiUrl, HttpMethod.GET, null, ExchangeRateResponse.class
+            );
 
-        ResponseEntity<ExchangeRateResponse> response = restTemplate.exchange(url, HttpMethod.GET, null, ExchangeRateResponse.class);
-
-        if (response.getBody() != null) {
-            Double rate = response.getBody().getRates().get(toCurrency);
-            if (rate != null) {
-                return rate;
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody().getConversionRates();
             } else {
-                throw new IllegalArgumentException("Não foi possível encontrar a taxa de câmbio para " + toCurrency);
+                throw new IllegalArgumentException("Erro ao acessar API de taxas de câmbio.");
             }
-        } else {
-            throw new IllegalArgumentException("Erro ao obter dados de câmbio da API");
+        } catch (Exception e) {
+            System.err.println("Erro ao obter taxas de câmbio: " + e.getMessage());
+            return Collections.emptyMap();
         }
     }
 
-    public CurrencyBalance convertToCurrencyBalance(Double balanceReal) {
-        Double balanceDolar = balanceReal * getExchangeRate("BRL", "USD");
-        Double balanceEuro = balanceReal * getExchangeRate("BRL", "EUR");
-        Double balanceIenes = balanceReal * getExchangeRate("BRL", "JPY");
+    public CurrencyBalance convertToCurrencyBalance(Double balance, String baseCurrency) {
+        Map<String, Double> rates = getExchangeRates(baseCurrency);
 
-        return new CurrencyBalance(balanceReal, balanceDolar, balanceEuro, balanceIenes);
+        if (rates.isEmpty()) {
+            throw new IllegalArgumentException("Falha ao obter taxas de câmbio para a moeda base: " + baseCurrency);
+        }
+
+        Double rateEuro = rates.get("EUR");
+        Double rateUsd = rates.get("USD");
+        Double rateJpy = rates.get("JPY");
+        Double rateBrl = rates.get("BRL");
+
+        if (rateEuro == null || rateUsd == null || rateJpy == null || rateBrl == null) {
+            throw new IllegalArgumentException("Taxas de câmbio incompletas retornadas pela API.");
+        }
+
+        Double balanceEuro = Math.round((balance / rateEuro) * 100.0) / 100.0;
+        Double balanceUsd = Math.round((balance / rateUsd) * 100.0) / 100.0;
+        Double balanceJpy = Math.round((balance / rateJpy) * 100.0) / 100.0;
+        Double balanceBrl = Math.round((balance / rateBrl) * 100.0) / 100.0;
+
+        return new CurrencyBalance(balanceBrl, balanceUsd, balanceEuro, balanceJpy);
     }
+
 }

@@ -10,15 +10,22 @@ import com.nttdata.dto.TransactionDTO;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.dto.AccountDTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.stream.Collectors;
 
-import static com.nttdata.application.mapper.AccountMapper.toCurrencyBalanceDTO;
-
+@Component
 public class UserMapper {
 
-    private static CurrencyConversionService currencyConversionService;
+    private final CurrencyConversionService currencyConversionService;
 
-    public static User toEntity(UserDTO userDTO) {
+    @Autowired
+    public UserMapper(CurrencyConversionService currencyConversionService) {
+        this.currencyConversionService = currencyConversionService;
+    }
+
+    public User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
             return null;
         }
@@ -31,7 +38,8 @@ public class UserMapper {
             userDTO.getDate()
         );
     }
-    public static UserDTO toDTO(User user) {
+
+    public UserDTO toDTO(User user) {
         if (user == null) {
             return null;
         }
@@ -44,18 +52,21 @@ public class UserMapper {
             user.getDate(),
             user.getAccounts() != null
                 ? user.getAccounts().stream()
-                .map(UserMapper::toAccountDTO)
+                .map(this::toAccountDTO)
                 .collect(Collectors.toList())
                 : null
         );
     }
-    public static AccountDTO toAccountDTO(Account account) {
+
+    public AccountDTO toAccountDTO(Account account) {
         if (account == null) {
             return null;
         }
-        CurrencyBalance currencyBalance = currencyConversionService.convertToCurrencyBalance(account.getBalance());
 
-        CurrencyBalanceDTO currencyBalanceDTO = toCurrencyBalanceDTO(currencyBalance);
+        String baseCurrency = "BRL";
+
+        CurrencyBalance currencyBalance = currencyConversionService.convertToCurrencyBalance(account.getBalance(), baseCurrency);
+        CurrencyBalanceDTO currencyBalanceDTO = AccountMapper.toCurrencyBalanceDTO(currencyBalance);
 
         AccountDTO accountDTO = new AccountDTO();
         accountDTO.setId(account.getId());
@@ -64,10 +75,18 @@ public class UserMapper {
         accountDTO.setUserId(account.getUser() != null ? account.getUser().getId() : null);
         accountDTO.setCurrencyBalance(currencyBalanceDTO);
 
+        if (account.getTransactions() != null) {
+            accountDTO.setTransactions(
+                account.getTransactions().stream()
+                    .map(this::toTransactionDTO)
+                    .collect(Collectors.toList())
+            );
+        }
+
         return accountDTO;
     }
 
-    public static TransactionDTO toTransactionDTO(Transaction transaction) {
+    public TransactionDTO toTransactionDTO(Transaction transaction) {
         if (transaction == null) {
             return null;
         }
@@ -80,7 +99,8 @@ public class UserMapper {
             transaction.getAccount() != null ? transaction.getAccount().getId() : null
         );
     }
-    public static void updateEntityFromDTO(UserDTO userDTO, User user) {
+
+    public void updateEntityFromDTO(UserDTO userDTO, User user) {
         if (userDTO.getName() != null) {
             user.setName(userDTO.getName());
         }

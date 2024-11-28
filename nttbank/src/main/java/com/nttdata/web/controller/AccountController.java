@@ -27,6 +27,13 @@ public class AccountController {
     @Autowired
     private UserService userService;
 
+    private final AccountMapper accountMapper;
+
+    @Autowired
+    public AccountController(AccountMapper accountMapper) {
+        this.accountMapper = accountMapper;
+    }
+
     @PostMapping
     public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO) {
         try {
@@ -42,7 +49,7 @@ public class AccountController {
                     .body(Map.of("error", "Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário."));
             }
             Account savedAccount = accountService.save(user, accountDTO);
-            AccountDTO accountResponse = AccountMapper.toDTO(savedAccount);
+            AccountDTO accountResponse = accountMapper.toDTO(savedAccount);
 
             return ResponseEntity.ok(accountResponse);
         } catch (IllegalArgumentException e) {
@@ -57,7 +64,7 @@ public class AccountController {
     @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         List<AccountDTO> accountsDTO = accountService.findAll().stream()
-            .map(AccountMapper::toDTO)
+            .map(accountMapper::toDTO)
             .collect(Collectors.toList());
         return ResponseEntity.ok(accountsDTO);
     }
@@ -66,7 +73,7 @@ public class AccountController {
     public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long id) {
         var account = accountService.findById(id);
         if (account != null) {
-            return ResponseEntity.ok(AccountMapper.toDTO(account));
+            return ResponseEntity.ok(accountMapper.toDTO(account));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -75,12 +82,6 @@ public class AccountController {
     @PutMapping("/{id}")
     public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id, @RequestBody AccountDTO accountDTO) {
         var account = accountService.update(id, accountDTO);
-        return ResponseEntity.ok(AccountMapper.toDTO(account));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deactivateAccount(@PathVariable Long id) {
-        accountService.deactivate(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(accountMapper.toDTO(account));
     }
 }

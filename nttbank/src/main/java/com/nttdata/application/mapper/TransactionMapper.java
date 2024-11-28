@@ -3,10 +3,16 @@ package com.nttdata.application.mapper;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.dto.TransactionDTO;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransactionMapper {
 
-    public static TransactionDTO toDTO(Transaction transaction) {
+    public TransactionDTO toDTO(Transaction transaction) {
+        if (transaction == null) {
+            return null;
+        }
+
         Long accountId = null;
         if (transaction.getAccount() != null) {
             accountId = transaction.getAccount().getId();
@@ -21,7 +27,12 @@ public class TransactionMapper {
             accountId
         );
     }
-    public static Transaction toEntity(TransactionDTO transactionDTO, Account account) {
+
+    public Transaction toEntity(TransactionDTO transactionDTO, Account account) {
+        if (transactionDTO == null || account == null) {
+            return null;
+        }
+
         return new Transaction(
             transactionDTO.getType(),
             transactionDTO.getCategory(),
@@ -31,3 +42,4 @@ public class TransactionMapper {
         );
     }
 }
+

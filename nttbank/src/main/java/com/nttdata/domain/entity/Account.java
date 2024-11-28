@@ -28,6 +28,22 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private CurrencyBalance currencyBalance;
 
+    public Account() {
+    }
+
+    public Account(Long id, AccountType type, Double balance, boolean active, User user, List<Transaction> transactions, CurrencyBalance currencyBalance) {
+        this.id = id;
+        this.type = type;
+        this.balance = balance;
+        this.active = active;
+        this.user = user;
+        this.transactions = transactions;
+        this.currencyBalance = currencyBalance;
+    }
+
+    public Account(Long id, AccountType type, Double balance, Object o) {
+    }
+
     public Long getId() {
         return id;
     }

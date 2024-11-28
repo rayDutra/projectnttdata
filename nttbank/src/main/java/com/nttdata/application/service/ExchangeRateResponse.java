@@ -1,34 +1,36 @@
 package com.nttdata.application.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 public class ExchangeRateResponse {
+    private String result;
+    private String baseCode;
 
-    private String base;
-    private String date;
-    private Map<String, Double> rates;
+    @JsonProperty("conversion_rates")
+    private Map<String, Double> conversionRates;
 
-    public String getBase() {
-        return base;
+    public String getResult() {
+        return result;
     }
 
-    public void setBase(String base) {
-        this.base = base;
+    public void setResult(String result) {
+        this.result = result;
     }
 
-    public String getDate() {
-        return date;
+    public String getBaseCode() {
+        return baseCode;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setBaseCode(String baseCode) {
+        this.baseCode = baseCode;
     }
 
-    public Map<String, Double> getRates() {
-        return rates;
+    public Map<String, Double> getConversionRates() {
+        return conversionRates;
     }
 
-    public void setRates(Map<String, Double> rates) {
-        this.rates = rates;
+    public void setConversionRates(Map<String, Double> conversionRates) {
+        this.conversionRates = conversionRates;
     }
 }

@@ -43,6 +43,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -57,33 +60,37 @@ public class UserController {
             return ResponseEntity.badRequest().body("Erro ao processar o arquivo: " + e.getMessage());
         }
     }
+
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
         if (userRepository.findByLogin(userDTO.getLogin()).isPresent()) {
             return ResponseEntity.badRequest().body(Map.of("error", "O login já está em uso."));
         }
 
-        User user = UserMapper.toEntity(userDTO);
+        User user = userMapper.toEntity(userDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
 
         var uri = uriBuilder.path("/api/users/{id}").buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(uri).body(UserMapper.toDTO(savedUser));
+        return ResponseEntity.created(uri).body(userMapper.toDTO(savedUser));
     }
+
     @GetMapping
     public ResponseEntity<Page<UserDTO>> list(Pageable pageable) {
         Page<User> page = userRepository.findAll(pageable);
-        Page<UserDTO> dtoPage = page.map(UserMapper::toDTO);
+        Page<UserDTO> dtoPage = page.map(userMapper::toDTO);
         return ResponseEntity.ok(dtoPage);
     }
+
     @PutMapping
     @Transactional
     public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO) {
         var user = userRepository.findById(userDTO.getId())
             .orElseThrow(() -> new RuntimeException("User not found"));
-        UserMapper.updateEntityFromDTO(userDTO, user);
-        return ResponseEntity.ok(UserMapper.toDTO(user));
+        userMapper.updateEntityFromDTO(userDTO, user);
+        return ResponseEntity.ok(userMapper.toDTO(user));
     }
+
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -96,9 +103,10 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserWithDetails(@PathVariable Long id) {
         User user = userService.getUserWithDetails(id);
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
+
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportUserTransactionsToExcel(@PathVariable Long id) {
         try {
@@ -115,3 +123,4 @@ public class UserController {
         }
     }
 }
+

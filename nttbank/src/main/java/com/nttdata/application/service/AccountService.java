@@ -16,22 +16,26 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final CurrencyConversionService currencyConversionService;
+    private final AccountMapper accountMapper;
 
     @Autowired
-    private CurrencyConversionService currencyConversionService;
-
-    @Autowired
-    public AccountService(CurrencyConversionService currencyConversionService) {
+    public AccountService(CurrencyConversionService currencyConversionService,
+                          AccountRepository accountRepository,
+                          AccountMapper accountMapper) {
         this.currencyConversionService = currencyConversionService;
+        this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
     }
 
     public void updateCurrencyBalance(Account account) {
         if (account.getBalance() != null) {
-            account.setCurrencyBalance(currencyConversionService.convertToCurrencyBalance(account.getBalance()));
+            String baseCurrency = "BRL";
+            account.setCurrencyBalance(currencyConversionService.convertToCurrencyBalance(account.getBalance(), baseCurrency));
         }
     }
+
     private void validateUniqueAccountType(User user, AccountType accountType) {
         Account existingAccount = accountRepository.findByUserAndType(user, accountType);
         if (existingAccount != null) {
@@ -46,7 +50,7 @@ public class AccountService {
     @Transactional
     public Account save(User user, AccountDTO accountDTO) {
         validateUniqueAccountType(user, accountDTO.getType());
-        Account account = AccountMapper.toEntity(accountDTO);
+        Account account = accountMapper.toEntity(accountDTO);
         account.setUser(user);
         return accountRepository.save(account);
     }
@@ -64,7 +68,7 @@ public class AccountService {
         Account existingAccount = findById(id);
         if (existingAccount != null) {
             validateUniqueAccountType(existingAccount.getUser(), accountDTO.getType());
-            Account account = AccountMapper.toEntity(accountDTO);
+            Account account = accountMapper.toEntity(accountDTO);
             account.setId(id);
             return accountRepository.save(account);
         }

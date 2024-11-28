@@ -26,6 +26,9 @@ public class TransactionController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private TransactionMapper transactionMapper; // Injeção do TransactionMapper
+
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         Account account = accountService.findById(transactionDTO.getAccountId());
@@ -33,16 +36,16 @@ public class TransactionController {
         if (account == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        Transaction transaction = TransactionMapper.toEntity(transactionDTO, account);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, account); // Use a instância
         Transaction processedTransaction = transactionService.processTransaction(transaction);
-        TransactionDTO transactionResponse = TransactionMapper.toDTO(processedTransaction);
+        TransactionDTO transactionResponse = transactionMapper.toDTO(processedTransaction); // Use a instância
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
         List<TransactionDTO> transactionsDTO = transactionService.findAll().stream()
-            .map(TransactionMapper::toDTO)
+            .map(transactionMapper::toDTO) // Use a instância
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(transactionsDTO);
@@ -52,7 +55,7 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
         var transaction = transactionService.findById(id);
         if (transaction != null) {
-            return ResponseEntity.ok(TransactionMapper.toDTO(transaction));
+            return ResponseEntity.ok(transactionMapper.toDTO(transaction)); // Use a instância
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -62,7 +65,7 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
         var updatedTransaction = transactionService.update(id, transactionDTO);
         if (updatedTransaction != null) {
-            return ResponseEntity.ok(TransactionMapper.toDTO(updatedTransaction));
+            return ResponseEntity.ok(transactionMapper.toDTO(updatedTransaction));
         } else {
             return ResponseEntity.notFound().build();
         }

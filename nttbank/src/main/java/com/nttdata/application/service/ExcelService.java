@@ -6,6 +6,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
+import org.apache.poi.xddf.usermodel.chart.AxisPosition;
+import org.apache.poi.xddf.usermodel.chart.LegendPosition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,9 +61,9 @@ public class ExcelService {
                 row.createCell(3).setCellValue(transaction.getDate().toString());
             }
 
-            createBarChart(workbook, sheet, "Despesas por Categoria (Business)", 5, 0, transactions, "business");
-            createBarChart(workbook, sheet, "Despesas por Categoria (Current)", 20, 0, transactions, "current");
-            createBarChart(workbook, sheet, "Despesas por Categoria (Saving)", 35, 0, transactions, "saving");
+            createBarChart(workbook, sheet, "Despesas por Categoria (Empresarial)", 5, 0, transactions, "empresarial");
+            createBarChart(workbook, sheet, "Despesas por Categoria (Corrente)", 20, 0, transactions, "corrente");
+            createBarChart(workbook, sheet, "Despesas por Categoria (Poupança)", 35, 0, transactions, "poupança");
 
             workbook.write(out);
             return out;
@@ -70,6 +72,7 @@ public class ExcelService {
 
     private void createBarChart(XSSFWorkbook workbook, XSSFSheet sheet, String chartTitle, int rowStart, int colStart, List<Transaction> transactions, String accountType) {
         XSSFDrawing drawing = sheet.createDrawingPatriarch();
+
         XSSFClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, colStart, rowStart, colStart + 10, rowStart + 15);
         XSSFChart chart = drawing.createChart(anchor);
 
@@ -90,6 +93,7 @@ public class ExcelService {
 
         XDDFCategoryAxis categoryAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
         categoryAxis.setTitle("Categorias");
+
         XDDFValueAxis valueAxis = chart.createValueAxis(AxisPosition.LEFT);
         valueAxis.setTitle("Total Gasto");
 
@@ -105,5 +109,7 @@ public class ExcelService {
         series.setTitle("Despesas", null);
 
         chart.plot(barData);
+
+        sheet.setColumnWidth(colStart, 5000);
     }
 }
