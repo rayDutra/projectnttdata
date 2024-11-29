@@ -2,47 +2,50 @@ package com.nttdata.dto;
 
 public class CurrencyBalanceDTO {
 
-    private Double balanceReal;
-    private Double balanceDolar;
-    private Double balanceEuro;
-    private Double balanceIenes;
+    private String balanceReal;
+    private String balanceDolar;
+    private String balanceEuro;
+    private String balanceIenes;
 
-    public CurrencyBalanceDTO(Double balanceReal, Double balanceDolar, Double balanceEuro, Double balanceIenes) {
+    public CurrencyBalanceDTO(String balanceReal, String balanceDolar, String balanceEuro, String balanceIenes) {
         this.balanceReal = balanceReal;
         this.balanceDolar = balanceDolar;
         this.balanceEuro = balanceEuro;
         this.balanceIenes = balanceIenes;
     }
 
-    public Double getBalanceReal() {
+    public CurrencyBalanceDTO() {
+    }
+
+    public String getBalanceReal() {
         return balanceReal;
     }
 
-    public void setBalanceReal(Double balanceReal) {
+    public void setBalanceReal(String balanceReal) {
         this.balanceReal = balanceReal;
     }
 
-    public Double getBalanceDolar() {
+    public String getBalanceDolar() {
         return balanceDolar;
     }
 
-    public void setBalanceDolar(Double balanceDolar) {
+    public void setBalanceDolar(String balanceDolar) {
         this.balanceDolar = balanceDolar;
     }
 
-    public Double getBalanceEuro() {
+    public String getBalanceEuro() {
         return balanceEuro;
     }
 
-    public void setBalanceEuro(Double balanceEuro) {
+    public void setBalanceEuro(String balanceEuro) {
         this.balanceEuro = balanceEuro;
     }
 
-    public Double getBalanceIenes() {
+    public String getBalanceIenes() {
         return balanceIenes;
     }
 
-    public void setBalanceIenes(Double balanceIenes) {
+    public void setBalanceIenes(String balanceIenes) {
         this.balanceIenes = balanceIenes;
     }
 }

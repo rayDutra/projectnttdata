@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,14 +83,16 @@ public class UserController {
         return ResponseEntity.ok(dtoPage);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO) {
-        var user = userRepository.findById(userDTO.getId())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        var user = userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("User not found"));
         userMapper.updateEntityFromDTO(userDTO, user);
+        userRepository.save(user);
         return ResponseEntity.ok(userMapper.toDTO(user));
     }
+
 
     @DeleteMapping("/{id}")
     @Transactional
@@ -122,5 +125,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportAllUsersWithDetailsToExcel() {
+        try {
+            List<User> users = userRepository.findAll();
+
+            ByteArrayOutputStream excelReport = excelService.generateFullUserReport(users);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=users_report.xlsx");
+            return new ResponseEntity<>(excelReport.toByteArray(), headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
 }
+
+
 

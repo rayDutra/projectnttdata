@@ -84,4 +84,20 @@ public class AccountController {
         var account = accountService.update(id, accountDTO);
         return ResponseEntity.ok(accountMapper.toDTO(account));
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
+        try {
+            var account = accountService.findById(id);
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Conta não encontrada"));
+            }
+            accountService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Erro interno ao excluir a conta: " + e.getMessage()));
+        }
+    }
+
 }

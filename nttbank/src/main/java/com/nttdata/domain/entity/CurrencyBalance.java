@@ -44,32 +44,32 @@ public class CurrencyBalance {
         this.account = account;
     }
 
-    public Double getBalanceReal() {
-        return balanceReal;
+    public String getBalanceReal() {
+        return "R$ " + String.format("%.2f", balanceReal);
     }
 
     public void setBalanceReal(Double balanceReal) {
         this.balanceReal = balanceReal;
     }
 
-    public Double getBalanceDolar() {
-        return balanceDolar;
+    public String getBalanceDolar() {
+        return "$ " + String.format("%.2f", balanceDolar);
     }
 
     public void setBalanceDolar(Double balanceDolar) {
         this.balanceDolar = balanceDolar;
     }
 
-    public Double getBalanceEuro() {
-        return balanceEuro;
+    public String getBalanceEuro() {
+        return "€ " + String.format("%.2f", balanceEuro);
     }
 
     public void setBalanceEuro(Double balanceEuro) {
         this.balanceEuro = balanceEuro;
     }
 
-    public Double getBalanceIenes() {
-        return balanceIenes;
+    public String getBalanceIenes() {
+        return "¥ " + String.format("%.2f", balanceIenes);
     }
 
     public void setBalanceIenes(Double balanceIenes) {

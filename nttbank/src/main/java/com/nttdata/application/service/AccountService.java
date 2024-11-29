@@ -82,4 +82,13 @@ public class AccountService {
             accountRepository.save(account);
         }
     }
+    @Transactional
+    public void delete(Long id) {
+        Account account = findById(id);
+        if (account == null) {
+            throw new IllegalArgumentException("Conta não encontrada.");
+        }
+        accountRepository.delete(account);
+    }
+
 }

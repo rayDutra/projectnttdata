@@ -2,6 +2,8 @@ package com.nttdata.application.mapper;
 
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
+import com.nttdata.domain.enums.TransactionCategory;
+import com.nttdata.domain.enums.TransactionType;
 import com.nttdata.dto.TransactionDTO;
 import org.springframework.stereotype.Component;
 
@@ -33,13 +35,19 @@ public class TransactionMapper {
             return null;
         }
 
-        return new Transaction(
-            transactionDTO.getType(),
-            transactionDTO.getCategory(),
+        TransactionType type = transactionDTO.getType();
+        TransactionCategory category = transactionDTO.getCategory();
+
+        Transaction transaction = new Transaction(
+            type,
+            category,
             transactionDTO.getAmount(),
             transactionDTO.getDate(),
             account
         );
+
+        return transaction;
     }
+
 }
 

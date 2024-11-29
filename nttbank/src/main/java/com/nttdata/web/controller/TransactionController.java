@@ -27,7 +27,7 @@ public class TransactionController {
     private AccountService accountService;
 
     @Autowired
-    private TransactionMapper transactionMapper; // Injeção do TransactionMapper
+    private TransactionMapper transactionMapper;
 
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
@@ -36,16 +36,16 @@ public class TransactionController {
         if (account == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        Transaction transaction = transactionMapper.toEntity(transactionDTO, account); // Use a instância
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, account);
         Transaction processedTransaction = transactionService.processTransaction(transaction);
-        TransactionDTO transactionResponse = transactionMapper.toDTO(processedTransaction); // Use a instância
+        TransactionDTO transactionResponse = transactionMapper.toDTO(processedTransaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
         List<TransactionDTO> transactionsDTO = transactionService.findAll().stream()
-            .map(transactionMapper::toDTO) // Use a instância
+            .map(transactionMapper::toDTO)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(transactionsDTO);
@@ -55,7 +55,7 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
         var transaction = transactionService.findById(id);
         if (transaction != null) {
-            return ResponseEntity.ok(transactionMapper.toDTO(transaction)); // Use a instância
+            return ResponseEntity.ok(transactionMapper.toDTO(transaction));
         } else {
             return ResponseEntity.notFound().build();
         }

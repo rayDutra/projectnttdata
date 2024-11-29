@@ -112,4 +112,67 @@ public class ExcelService {
 
         sheet.setColumnWidth(colStart, 5000);
     }
+    public ByteArrayOutputStream generateFullUserReport(List<User> users) throws IOException {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            XSSFSheet sheet = workbook.createSheet("Relatório de Usuários");
+
+            // Cabeçalhos do relatório
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Usuário");
+            header.createCell(1).setCellValue("Email");
+            header.createCell(2).setCellValue("Login");
+            header.createCell(3).setCellValue("Conta");
+            header.createCell(4).setCellValue("Tipo");
+            header.createCell(5).setCellValue("Saldo");
+            header.createCell(6).setCellValue("Transação");
+            header.createCell(7).setCellValue("Categoria");
+            header.createCell(8).setCellValue("Tipo");
+            header.createCell(9).setCellValue("Valor");
+            header.createCell(10).setCellValue("Data");
+
+            int rowNum = 1;
+
+            for (User user : users) {
+                boolean hasAccount = false;
+
+                for (var account : user.getAccounts()) {
+                    hasAccount = true;
+                    for (var transaction : account.getTransactions()) {
+                        Row row = sheet.createRow(rowNum++);
+                        row.createCell(0).setCellValue(user.getName());
+                        row.createCell(1).setCellValue(user.getEmail());
+                        row.createCell(2).setCellValue(user.getLogin());
+                        row.createCell(3).setCellValue(account.getId());
+                        row.createCell(4).setCellValue(account.getType().name());
+                        row.createCell(5).setCellValue(account.getBalance());
+                        row.createCell(6).setCellValue(transaction.getId());
+                        row.createCell(7).setCellValue(transaction.getCategory().name());
+                        row.createCell(8).setCellValue(transaction.getType().name());
+                        row.createCell(9).setCellValue(transaction.getAmount());
+                        row.createCell(10).setCellValue(transaction.getDate().toString());
+                    }
+                }
+
+                if (!hasAccount) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(user.getName());
+                    row.createCell(1).setCellValue(user.getEmail());
+                    row.createCell(2).setCellValue(user.getLogin());
+                    row.createCell(3).setCellValue("Nenhuma conta");
+                    row.createCell(4).setCellValue("N/A");
+                    row.createCell(5).setCellValue("0");
+                    row.createCell(6).setCellValue("Nenhuma transação");
+                    row.createCell(7).setCellValue("N/A");
+                    row.createCell(8).setCellValue("N/A");
+                    row.createCell(9).setCellValue("0");
+                    row.createCell(10).setCellValue("N/A");
+                }
+            }
+
+            workbook.write(out);
+            return out;
+        }
+    }
+
+
 }
