@@ -1,6 +1,7 @@
 package com.nttdata.application.service;
 
 import com.nttdata.application.mapper.AccountMapper;
+import com.nttdata.application.impls.AccountServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AccountService {
+public class AccountService implements AccountServiceImpl {
 
     private final AccountRepository accountRepository;
     private final CurrencyConversionService currencyConversionService;
@@ -22,31 +23,20 @@ public class AccountService {
 
     @Autowired
     public AccountService(CurrencyConversionService currencyConversionService,
-                          AccountRepository accountRepository,
-                          AccountMapper accountMapper) {
+                              AccountRepository accountRepository,
+                              AccountMapper accountMapper) {
         this.currencyConversionService = currencyConversionService;
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
     }
 
-    public void updateCurrencyBalance(Account account) {
-        if (account.getBalance() != null) {
-            String baseCurrency = "BRL";
-            account.setCurrencyBalance(currencyConversionService.convertToCurrencyBalance(account.getBalance(), baseCurrency));
-        }
-    }
 
-    private void validateUniqueAccountType(User user, AccountType accountType) {
-        Account existingAccount = accountRepository.findByUserAndType(user, accountType);
-        if (existingAccount != null) {
-            throw new IllegalArgumentException("O usuário já possui uma conta do tipo " + accountType);
-        }
-    }
-
+    @Override
     public boolean existsByUserIdAndType(Long userId, AccountType type) {
         return accountRepository.existsByUserIdAndType(userId, type);
     }
 
+    @Override
     @Transactional
     public Account save(User user, AccountDTO accountDTO) {
         validateUniqueAccountType(user, accountDTO.getType());
@@ -55,15 +45,18 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
+    @Override
     public List<Account> findAll() {
         return accountRepository.findAll();
     }
 
+    @Override
     public Account findById(Long id) {
         Optional<Account> account = accountRepository.findById(id);
         return account.orElse(null);
     }
 
+    @Override
     public Account update(Long id, AccountDTO accountDTO) {
         Account existingAccount = findById(id);
         if (existingAccount != null) {
@@ -75,6 +68,7 @@ public class AccountService {
         return null;
     }
 
+    @Override
     public void deactivate(Long id) {
         Account account = findById(id);
         if (account != null) {
@@ -82,6 +76,8 @@ public class AccountService {
             accountRepository.save(account);
         }
     }
+
+    @Override
     @Transactional
     public void delete(Long id) {
         Account account = findById(id);
@@ -91,4 +87,10 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
+    private void validateUniqueAccountType(User user, AccountType accountType) {
+        Account existingAccount = accountRepository.findByUserAndType(user, accountType);
+        if (existingAccount != null) {
+            throw new IllegalArgumentException("O usuário já possui uma conta do tipo " + accountType);
+        }
+    }
 }

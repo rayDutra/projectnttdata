@@ -2,13 +2,12 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.UserMapper;
 import com.nttdata.application.service.ExcelService;
-import com.nttdata.application.service.UserService;
+import com.nttdata.application.impls.UserServiceImpl;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
     private UserMapper userMapper;
@@ -78,7 +76,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserDTO>> list(Pageable pageable) {
-        Page<User> page = userRepository.findAll(pageable);
+        Page<User> page = userServiceImpl.findAll(pageable);
         Page<UserDTO> dtoPage = page.map(userMapper::toDTO);
         return ResponseEntity.ok(dtoPage);
     }
@@ -86,26 +84,23 @@ public class UserController {
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        var user = userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = userServiceImpl.findById(id);
         userMapper.updateEntityFromDTO(userDTO, user);
         userRepository.save(user);
         return ResponseEntity.ok(userMapper.toDTO(user));
     }
 
-
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        var user = userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        var user = userServiceImpl.findById(id);
         user.deactivate();
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserWithDetails(@PathVariable Long id) {
-        User user = userService.getUserWithDetails(id);
+        User user = userServiceImpl.getUserWithDetails(id);
         UserDTO userDTO = userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
@@ -113,9 +108,7 @@ public class UserController {
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportUserTransactionsToExcel(@PathVariable Long id) {
         try {
-            User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+            User user = userServiceImpl.findById(id);
             List<Transaction> transactions = user.getTransactions();
             ByteArrayOutputStream byteArrayOutputStream = excelService.generateExpenseAnalysisExcel(transactions);
             HttpHeaders headers = new HttpHeaders();

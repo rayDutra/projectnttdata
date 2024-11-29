@@ -1,9 +1,8 @@
 package com.nttdata.application.service;
 
+import com.nttdata.application.impls.TransactionServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
-import com.nttdata.domain.enums.TransactionCategory;
-import com.nttdata.domain.enums.TransactionType;
 import com.nttdata.dto.TransactionDTO;
 import com.nttdata.infrastructure.repository.AccountRepository;
 import com.nttdata.infrastructure.repository.TransactionRepository;
@@ -14,25 +13,28 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class TransactionService {
+public class TransactionService implements TransactionServiceImpl {
 
     @Autowired
     private TransactionRepository transactionRepository;
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Override
     public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
-
-    public List<Transaction> findAll() {
-        return transactionRepository.findAll();
-    }
-
+    @Override
     public Transaction findById(Long id) {
         return transactionRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public List<Transaction> findAll() {
+        return transactionRepository.findAll();
+    }
+    @Override
     public Transaction update(Long id, TransactionDTO transactionDTO) {
         Transaction transaction = findById(id);
         if (transaction != null) {
@@ -45,12 +47,14 @@ public class TransactionService {
         return null;
     }
 
+    @Override
     public void delete(Long id) {
         Transaction transaction = findById(id);
         if (transaction != null) {
             transactionRepository.delete(transaction);
         }
     }
+    @Override
     public Transaction processTransaction(Transaction transaction) {
         Account account = transaction.getAccount();
         if (account == null || account.getId() == null) {

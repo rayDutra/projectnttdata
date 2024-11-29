@@ -1,8 +1,8 @@
 package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.AccountMapper;
-import com.nttdata.application.service.AccountService;
 import com.nttdata.application.service.UserService;
+import com.nttdata.application.impls.AccountServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.AccountDTO;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class AccountController {
 
     @Autowired
-    private AccountService accountService;
+    private AccountServiceImpl accountServiceImpl;
 
     @Autowired
     private UserService userService;
@@ -43,12 +43,12 @@ public class AccountController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Usuário não encontrado"));
             }
-            boolean accountExists = accountService.existsByUserIdAndType(user.getId(), accountDTO.getType());
+            boolean accountExists = accountServiceImpl.existsByUserIdAndType(user.getId(), accountDTO.getType());
             if (accountExists) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário."));
             }
-            Account savedAccount = accountService.save(user, accountDTO);
+            Account savedAccount = accountServiceImpl.save(user, accountDTO);
             AccountDTO accountResponse = accountMapper.toDTO(savedAccount);
 
             return ResponseEntity.ok(accountResponse);
@@ -63,7 +63,7 @@ public class AccountController {
 
     @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-        List<AccountDTO> accountsDTO = accountService.findAll().stream()
+        List<AccountDTO> accountsDTO = accountServiceImpl.findAll().stream()
             .map(accountMapper::toDTO)
             .collect(Collectors.toList());
         return ResponseEntity.ok(accountsDTO);
@@ -71,7 +71,7 @@ public class AccountController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long id) {
-        var account = accountService.findById(id);
+        var account = accountServiceImpl.findById(id);
         if (account != null) {
             return ResponseEntity.ok(accountMapper.toDTO(account));
         } else {
@@ -81,18 +81,18 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id, @RequestBody AccountDTO accountDTO) {
-        var account = accountService.update(id, accountDTO);
+        var account = accountServiceImpl.update(id, accountDTO);
         return ResponseEntity.ok(accountMapper.toDTO(account));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
-            var account = accountService.findById(id);
+            var account = accountServiceImpl.findById(id);
             if (account == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Conta não encontrada"));
             }
-            accountService.delete(id);
+            accountServiceImpl.delete(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

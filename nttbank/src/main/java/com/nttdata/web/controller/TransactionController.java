@@ -2,7 +2,7 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.TransactionMapper;
 import com.nttdata.application.service.AccountService;
-import com.nttdata.application.service.TransactionService;
+import com.nttdata.application.impls.TransactionServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.dto.TransactionDTO;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class TransactionController {
 
     @Autowired
-    private TransactionService transactionService;
+    private TransactionServiceImpl transactionServiceImpl;
 
     @Autowired
     private AccountService accountService;
@@ -37,14 +37,14 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account);
-        Transaction processedTransaction = transactionService.processTransaction(transaction);
+        Transaction processedTransaction = transactionServiceImpl.processTransaction(transaction);
         TransactionDTO transactionResponse = transactionMapper.toDTO(processedTransaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
-        List<TransactionDTO> transactionsDTO = transactionService.findAll().stream()
+        List<TransactionDTO> transactionsDTO = transactionServiceImpl.findAll().stream()
             .map(transactionMapper::toDTO)
             .collect(Collectors.toList());
 
@@ -53,7 +53,7 @@ public class TransactionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
-        var transaction = transactionService.findById(id);
+        var transaction = transactionServiceImpl.findById(id);
         if (transaction != null) {
             return ResponseEntity.ok(transactionMapper.toDTO(transaction));
         } else {
@@ -63,7 +63,7 @@ public class TransactionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TransactionDTO> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
-        var updatedTransaction = transactionService.update(id, transactionDTO);
+        var updatedTransaction = transactionServiceImpl.update(id, transactionDTO);
         if (updatedTransaction != null) {
             return ResponseEntity.ok(transactionMapper.toDTO(updatedTransaction));
         } else {
@@ -73,7 +73,7 @@ public class TransactionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
-        transactionService.delete(id);
+        transactionServiceImpl.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
