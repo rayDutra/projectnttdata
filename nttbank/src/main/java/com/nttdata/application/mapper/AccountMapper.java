@@ -80,7 +80,6 @@ public class AccountMapper {
         return accountDTO;
     }
 
-
     public static CurrencyBalanceDTO toCurrencyBalanceDTO(CurrencyBalance currencyBalance) {
         if (currencyBalance == null) {
             return null;

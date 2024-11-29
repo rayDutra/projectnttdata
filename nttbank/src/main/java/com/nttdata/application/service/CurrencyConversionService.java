@@ -44,7 +44,6 @@ public class CurrencyConversionService {
         }
     }
 
-
     public CurrencyBalance convertToCurrencyBalance(Double balance, String baseCurrency) {
         Map<String, Double> rates = getExchangeRates(baseCurrency);
 

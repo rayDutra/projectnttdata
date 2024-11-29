@@ -7,6 +7,7 @@ import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.AccountDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,26 +39,23 @@ public class AccountController {
     public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO) {
         try {
             User user = userService.findById(accountDTO.getUserId());
-
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Usuário não encontrado"));
+                throw new EntityNotFoundException("Usuário não encontrado");
             }
+
             boolean accountExists = accountServiceImpl.existsByUserIdAndType(user.getId(), accountDTO.getType());
             if (accountExists) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário."));
+                throw new IllegalArgumentException("Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário.");
             }
+
             Account savedAccount = accountServiceImpl.save(user, accountDTO);
             AccountDTO accountResponse = accountMapper.toDTO(savedAccount);
-
             return ResponseEntity.ok(accountResponse);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", "Erro: " + e.getMessage()));
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Erro interno do servidor"));
+            throw new RuntimeException("Erro interno ao criar a conta", e);
         }
     }
 
@@ -75,29 +73,33 @@ public class AccountController {
         if (account != null) {
             return ResponseEntity.ok(accountMapper.toDTO(account));
         } else {
-            return ResponseEntity.notFound().build();
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id, @RequestBody AccountDTO accountDTO) {
         var account = accountServiceImpl.update(id, accountDTO);
+        if (account == null) {
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
+        }
         return ResponseEntity.ok(accountMapper.toDTO(account));
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
             var account = accountServiceImpl.findById(id);
             if (account == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Conta não encontrada"));
+                throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
             }
             accountServiceImpl.delete(id);
             return ResponseEntity.noContent().build();
+
+        } catch (EntityNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Erro interno ao excluir a conta: " + e.getMessage()));
+            throw new RuntimeException("Erro interno ao excluir a conta", e);
         }
     }
-
 }

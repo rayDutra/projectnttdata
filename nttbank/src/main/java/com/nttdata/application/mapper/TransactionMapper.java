@@ -29,7 +29,6 @@ public class TransactionMapper {
             accountId
         );
     }
-
     public Transaction toEntity(TransactionDTO transactionDTO, Account account) {
         if (transactionDTO == null || account == null) {
             return null;

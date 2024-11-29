@@ -7,6 +7,7 @@ import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
 import com.nttdata.dto.AccountDTO;
 import com.nttdata.infrastructure.repository.AccountRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +24,12 @@ public class AccountService implements AccountServiceImpl {
 
     @Autowired
     public AccountService(CurrencyConversionService currencyConversionService,
-                              AccountRepository accountRepository,
-                              AccountMapper accountMapper) {
+                          AccountRepository accountRepository,
+                          AccountMapper accountMapper) {
         this.currencyConversionService = currencyConversionService;
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
     }
-
 
     @Override
     public boolean existsByUserIdAndType(Long userId, AccountType type) {
@@ -52,29 +52,30 @@ public class AccountService implements AccountServiceImpl {
 
     @Override
     public Account findById(Long id) {
-        Optional<Account> account = accountRepository.findById(id);
-        return account.orElse(null);
+        return accountRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + id));
     }
 
     @Override
     public Account update(Long id, AccountDTO accountDTO) {
         Account existingAccount = findById(id);
-        if (existingAccount != null) {
-            validateUniqueAccountType(existingAccount.getUser(), accountDTO.getType());
-            Account account = accountMapper.toEntity(accountDTO);
-            account.setId(id);
-            return accountRepository.save(account);
+        if (existingAccount == null) {
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
         }
-        return null;
+        validateUniqueAccountType(existingAccount.getUser(), accountDTO.getType());
+        Account account = accountMapper.toEntity(accountDTO);
+        account.setId(id);
+        return accountRepository.save(account);
     }
 
     @Override
     public void deactivate(Long id) {
         Account account = findById(id);
-        if (account != null) {
-            account.setActive(false);
-            accountRepository.save(account);
+        if (account == null) {
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
         }
+        account.setActive(false);
+        accountRepository.save(account);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class AccountService implements AccountServiceImpl {
     public void delete(Long id) {
         Account account = findById(id);
         if (account == null) {
-            throw new IllegalArgumentException("Conta não encontrada.");
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
         }
         accountRepository.delete(account);
     }

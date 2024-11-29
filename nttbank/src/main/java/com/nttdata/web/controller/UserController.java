@@ -62,9 +62,10 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
-        if (userRepository.findByLogin(userDTO.getLogin()).isPresent()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "O login já está em uso."));
-        }
+        userRepository.findByLogin(userDTO.getLogin())
+            .ifPresent(user -> {
+                throw new RuntimeException("O login já está em uso.");
+            });
 
         User user = userMapper.toEntity(userDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -93,8 +94,9 @@ public class UserController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        var user = userServiceImpl.findById(id);
+        User user = userServiceImpl.findById(id);
         user.deactivate();
+        userRepository.save(user);
         return ResponseEntity.noContent().build();
     }
 
@@ -111,28 +113,30 @@ public class UserController {
             User user = userServiceImpl.findById(id);
             List<Transaction> transactions = user.getTransactions();
             ByteArrayOutputStream byteArrayOutputStream = excelService.generateExpenseAnalysisExcel(transactions);
+
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment; filename=transactions_report.xlsx");
+
             return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            throw new RuntimeException("Erro ao gerar o relatório de transações.", e);
         }
     }
+
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportAllUsersWithDetailsToExcel() {
         try {
             List<User> users = userRepository.findAll();
-
             ByteArrayOutputStream excelReport = excelService.generateFullUserReport(users);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment; filename=users_report.xlsx");
+
             return new ResponseEntity<>(excelReport.toByteArray(), headers, HttpStatus.OK);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            throw new RuntimeException("Erro ao gerar o relatório de usuários.", e);
         }
     }
-
 
 }
 

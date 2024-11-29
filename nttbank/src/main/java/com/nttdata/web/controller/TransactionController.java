@@ -7,6 +7,7 @@ import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.dto.TransactionDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +35,12 @@ public class TransactionController {
         Account account = accountService.findById(transactionDTO.getAccountId());
 
         if (account == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new EntityNotFoundException("Conta não encontrada para o ID: " + transactionDTO.getAccountId());
         }
+
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account);
         Transaction processedTransaction = transactionServiceImpl.processTransaction(transaction);
-        TransactionDTO transactionResponse = transactionMapper.toDTO(processedTransaction);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionMapper.toDTO(processedTransaction));
     }
 
     @GetMapping
@@ -53,22 +54,14 @@ public class TransactionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransactionById(@PathVariable Long id) {
-        var transaction = transactionServiceImpl.findById(id);
-        if (transaction != null) {
-            return ResponseEntity.ok(transactionMapper.toDTO(transaction));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Transaction transaction = transactionServiceImpl.findById(id);
+        return ResponseEntity.ok(transactionMapper.toDTO(transaction));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TransactionDTO> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
-        var updatedTransaction = transactionServiceImpl.update(id, transactionDTO);
-        if (updatedTransaction != null) {
-            return ResponseEntity.ok(transactionMapper.toDTO(updatedTransaction));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Transaction updatedTransaction = transactionServiceImpl.update(id, transactionDTO);
+        return ResponseEntity.ok(transactionMapper.toDTO(updatedTransaction));
     }
 
     @DeleteMapping("/{id}")

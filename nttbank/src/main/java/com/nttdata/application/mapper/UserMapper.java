@@ -57,7 +57,6 @@ public class UserMapper {
                 : null
         );
     }
-
     public AccountDTO toAccountDTO(Account account) {
         if (account == null) {
             return null;
