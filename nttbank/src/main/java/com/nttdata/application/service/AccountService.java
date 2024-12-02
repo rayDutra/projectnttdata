@@ -1,7 +1,7 @@
 package com.nttdata.application.service;
 
 import com.nttdata.application.mapper.AccountMapper;
-import com.nttdata.application.impls.AccountServiceImpl;
+import com.nttdata.application.service.impls.AccountServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountService implements AccountServiceImpl {

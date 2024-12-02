@@ -10,6 +10,7 @@ import com.nttdata.dto.CurrencyBalanceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Component
@@ -69,12 +70,13 @@ public class AccountMapper {
         accountDTO.setBalance(account.getBalance());
         accountDTO.setUserId(account.getUser() != null ? account.getUser().getId() : null);
         accountDTO.setCurrencyBalance(currencyBalanceDTO);
-
         if (account.getTransactions() != null) {
             accountDTO.setTransactions(account.getTransactions()
                 .stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList()));
+        } else {
+            accountDTO.setTransactions(Collections.emptyList());
         }
 
         return accountDTO;

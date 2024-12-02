@@ -41,7 +41,11 @@ public class Account {
         this.currencyBalance = currencyBalance;
     }
 
-    public Account(Long id, AccountType type, Double balance, Object o) {
+    public Account(Long id, AccountType type, Double balance, boolean active) {
+        this.id = id;
+        this.type = type;
+        this.balance = balance;
+        this.active = active;
     }
 
     public Long getId() {

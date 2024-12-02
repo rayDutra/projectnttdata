@@ -2,7 +2,7 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.UserMapper;
 import com.nttdata.application.service.ExcelService;
-import com.nttdata.application.impls.UserServiceImpl;
+import com.nttdata.application.service.impls.UserServiceImpl;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.UserDTO;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")

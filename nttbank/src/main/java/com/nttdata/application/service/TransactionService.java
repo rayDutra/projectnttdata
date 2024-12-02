@@ -1,6 +1,6 @@
 package com.nttdata.application.service;
 
-import com.nttdata.application.impls.TransactionServiceImpl;
+import com.nttdata.application.service.impls.TransactionServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.dto.TransactionDTO;

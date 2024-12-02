@@ -31,7 +31,7 @@ public class TransactionMapper {
     }
     public Transaction toEntity(TransactionDTO transactionDTO, Account account) {
         if (transactionDTO == null || account == null) {
-            return null;
+            throw new IllegalArgumentException("TransactionDTO e Account não podem ser nulos");
         }
 
         TransactionType type = transactionDTO.getType();
@@ -47,6 +47,7 @@ public class TransactionMapper {
 
         return transaction;
     }
+
 
 }
 

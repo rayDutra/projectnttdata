@@ -1,6 +1,6 @@
 package com.nttdata.application.service;
 
-import com.nttdata.application.impls.UserServiceImpl;
+import com.nttdata.application.service.impls.UserServiceImpl;
 import com.nttdata.domain.entity.User;
 import com.nttdata.infrastructure.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

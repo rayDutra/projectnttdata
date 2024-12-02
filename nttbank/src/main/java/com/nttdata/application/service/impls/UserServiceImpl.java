@@ -1,4 +1,4 @@
-package com.nttdata.application.impls;
+package com.nttdata.application.service.impls;
 
 import com.nttdata.domain.entity.User;
 import org.springframework.data.domain.Page;

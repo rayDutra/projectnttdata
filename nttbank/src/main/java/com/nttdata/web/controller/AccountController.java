@@ -2,19 +2,17 @@ package com.nttdata.web.controller;
 
 import com.nttdata.application.mapper.AccountMapper;
 import com.nttdata.application.service.UserService;
-import com.nttdata.application.impls.AccountServiceImpl;
+import com.nttdata.application.service.impls.AccountServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.dto.AccountDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
