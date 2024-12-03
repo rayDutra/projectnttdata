@@ -13,8 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Page<User> findAllByActiveTrue(Pageable pageable);
-
     Optional<User> findByLogin(String login);
 
     @Query("SELECT u FROM User u " +

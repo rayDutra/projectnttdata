@@ -4,6 +4,8 @@ import com.nttdata.domain.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayOutputStream;
+
 
 public interface UserServiceImpl {
 
@@ -12,5 +14,4 @@ public interface UserServiceImpl {
     public User getUserWithDetails(Long id);
 
     Page<User> findAll(Pageable pageable);
-
 }

@@ -9,6 +9,7 @@ import com.nttdata.dto.AccountDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,22 +39,26 @@ public class AccountController {
         try {
             User user = userService.findById(accountDTO.getUserId());
             if (user == null) {
-                throw new EntityNotFoundException("Usuário não encontrado");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuário não encontrado");
             }
 
             boolean accountExists = accountServiceImpl.existsByUserIdAndType(user.getId(), accountDTO.getType());
             if (accountExists) {
-                throw new IllegalArgumentException("Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário.");
             }
 
             Account savedAccount = accountServiceImpl.save(user, accountDTO);
             AccountDTO accountResponse = accountMapper.toDTO(savedAccount);
-            return ResponseEntity.ok(accountResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(accountResponse);
 
         } catch (IllegalArgumentException e) {
-            throw e;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Erro: " + e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException("Erro interno ao criar a conta", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro interno ao criar a conta: " + e.getMessage());
         }
     }
 

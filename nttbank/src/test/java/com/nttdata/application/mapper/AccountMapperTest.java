@@ -9,18 +9,14 @@ import com.nttdata.domain.enums.AccountType;
 import com.nttdata.dto.AccountDTO;
 import com.nttdata.dto.CurrencyBalanceDTO;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class AccountMapperTest {
@@ -41,49 +37,6 @@ class AccountMapperTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
-    @Test
-    void testToEntity_withValidAccountDTO() {
-        AccountDTO accountDTO = new AccountDTO();
-        accountDTO.setId(1L);
-        accountDTO.setType(AccountType.CORRENTE);
-        accountDTO.setBalance(Double.valueOf(1000));
-        accountDTO.setTransactions(Collections.emptyList());
-
-        Account account = accountMapper.toEntity(accountDTO);
-
-        assertNotNull(account);
-        assertEquals(1L, account.getId());
-        assertEquals(AccountType.CORRENTE, account.getType());
-        assertEquals(Double.valueOf(1000), account.getBalance());
-        assertTrue(account.getTransactions().isEmpty());
-    }
-    @Disabled
-    @Test
-    void testToDTO_withValidAccount() {
-        Account account = new Account();
-        account.setId(1L);
-        account.setType(AccountType.CORRENTE);
-        account.setBalance(1000.0);
-        account.setUser(new User(1L, "Nome", "email@example.com", "login", "senha", new Date()));
-        account.setTransactions(new ArrayList<>());
-
-        CurrencyBalance currencyBalance = new CurrencyBalance(1000.0, 200.0, 150.0, 500.0);
-        when(currencyConversionService.convertToCurrencyBalance(any(), any())).thenReturn(currencyBalance);
-
-        AccountDTO accountDTO = accountMapper.toDTO(account);
-
-        assertNotNull(accountDTO);
-        assertEquals(1L, accountDTO.getId());
-        assertEquals(AccountType.CORRENTE, accountDTO.getType());
-        assertEquals(1000.0, accountDTO.getBalance());
-        assertNotNull(accountDTO.getCurrencyBalance());
-        assertEquals("R$ 1000,00", accountDTO.getCurrencyBalance().getBalanceReal());
-        assertEquals(1L, accountDTO.getUserId());
-        assertTrue(accountDTO.getTransactions().isEmpty());
-    }
-
-
 
     @Test
     void testToEntity_withNullAccountDTO_throwsException() {
@@ -119,4 +72,46 @@ class AccountMapperTest {
         CurrencyBalanceDTO currencyBalanceDTO = AccountMapper.toCurrencyBalanceDTO(null);
         assertNull(currencyBalanceDTO);
     }
+
+    @Test
+    void testToEntity_withNullUserId_throwsException() {
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setId(1L);
+        accountDTO.setUserId(null);
+        accountDTO.setType(AccountType.CORRENTE);
+        accountDTO.setBalance(1000.0);
+        accountDTO.setTransactions(new ArrayList<>());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountMapper.toEntity(accountDTO);
+        });
+        assertEquals("User ID não pode ser nulo", exception.getMessage());
+    }
+    @Test
+    void testToEntity_withNullTransactions() {
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setId(1L);
+        accountDTO.setUserId(1L);
+        accountDTO.setType(AccountType.CORRENTE);
+        accountDTO.setBalance(1000.0);
+        accountDTO.setTransactions(null);
+
+        User user = new User();
+        user.setId(1L);
+        when(userService.findById(accountDTO.getUserId())).thenReturn(user);
+
+        Account account = accountMapper.toEntity(accountDTO);
+
+        assertNotNull(account);
+        assertEquals(1L, account.getId());
+        assertEquals(AccountType.CORRENTE, account.getType());
+        assertEquals(1000.0, account.getBalance());
+
+        assertNotNull(account.getUser());
+        assertEquals(1L, account.getUser().getId());
+
+        assertNotNull(account.getTransactions());
+        assertTrue(account.getTransactions().isEmpty());
+    }
+
 }

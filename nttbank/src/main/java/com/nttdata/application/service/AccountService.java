@@ -14,12 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class AccountService implements AccountServiceImpl {
 
     private final AccountRepository accountRepository;
     private final CurrencyConversionService currencyConversionService;
     private final AccountMapper accountMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
+
 
     @Autowired
     public AccountService(CurrencyConversionService currencyConversionService,
@@ -38,11 +44,20 @@ public class AccountService implements AccountServiceImpl {
     @Override
     @Transactional
     public Account save(User user, AccountDTO accountDTO) {
-        validateUniqueAccountType(user, accountDTO.getType());
-        Account account = accountMapper.toEntity(accountDTO);
-        account.setUser(user);
-        return accountRepository.save(account);
+        try {
+            validateUniqueAccountType(user, accountDTO.getType());
+            Account account = accountMapper.toEntity(accountDTO);
+            account.setUser(user);
+            Account savedAccount = accountRepository.save(account);
+            logger.info("Conta criada com sucesso para o usuário: " + user.getId());
+            return savedAccount;
+        } catch (Exception e) {
+            logger.error("Erro ao criar a conta para o usuário: " + user.getId(), e);
+            throw new RuntimeException("Erro ao criar a conta", e);
+        }
     }
+
+
 
     @Override
     public List<Account> findAll() {

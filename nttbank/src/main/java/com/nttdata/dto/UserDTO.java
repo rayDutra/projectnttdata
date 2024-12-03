@@ -28,7 +28,9 @@ public class UserDTO {
         this.accounts = accounts;
     }
 
-    public UserDTO(User user) {
+    public UserDTO(String login, String password) {
+        this.login = login;
+        this.password = password;
     }
 
     public Long getId() {

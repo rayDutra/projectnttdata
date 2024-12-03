@@ -1,8 +1,11 @@
-package com.nttdata.application.service;
+package com.nttdata.application.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.stereotype.Component;
+
 import java.util.Map;
 
+@Component
 public class ExchangeRateResponse {
     private String result;
     private String baseCode;

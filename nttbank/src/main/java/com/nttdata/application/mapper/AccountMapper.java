@@ -4,13 +4,18 @@ import com.nttdata.application.service.CurrencyConversionService;
 import com.nttdata.application.service.UserService;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.CurrencyBalance;
+import com.nttdata.domain.entity.Transaction;
+import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
 import com.nttdata.dto.AccountDTO;
 import com.nttdata.dto.CurrencyBalanceDTO;
+import com.nttdata.dto.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -40,13 +45,23 @@ public class AccountMapper {
         account.setType(accountDTO.getType());
         account.setBalance(accountDTO.getBalance());
 
-        account.setTransactions(accountDTO.getTransactions()
-            .stream()
-            .map(transactionDTO -> transactionMapper.toEntity(transactionDTO, account))
-            .collect(Collectors.toList()));
+        if (accountDTO.getUserId() != null) {
+            User user = userService.findById(accountDTO.getUserId());  /
+            account.setUser(user);
+        } else {
+            throw new IllegalArgumentException("User ID não pode ser nulo");
+        }
+
+        List<TransactionDTO> transactionDTOList = Optional.ofNullable(accountDTO.getTransactions())
+            .orElse(Collections.emptyList());
+
+        account.setTransactions(transactionDTOList.stream()
+            .map(transactionDTO -> transactionMapper.toEntity(transactionDTO, account))  // Convertendo de TransactionDTO para Transaction
+            .collect(Collectors.toList()));  // Cria a lista de Transaction
 
         return account;
     }
+
 
     public AccountDTO toDTO(Account account) {
         if (account == null) {

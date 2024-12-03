@@ -29,5 +29,4 @@ public class UserService implements UserServiceImpl {
         return userRepository.findByIdWithAccountsAndTransactions(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
-
 }

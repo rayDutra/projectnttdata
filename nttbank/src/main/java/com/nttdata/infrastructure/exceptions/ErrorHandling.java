@@ -20,6 +20,7 @@ public class ErrorHandling {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleValidationException(MethodArgumentNotValidException exception) {
         List<String> errors = exception.getFieldErrors().stream()

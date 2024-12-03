@@ -108,6 +108,16 @@
             <artifactId>byte-buddy</artifactId>
             <version>1.15.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest</artifactId>
+            <version>1.16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
     <build>
@@ -115,6 +125,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.15.2</version>
+                <configuration>
+                    <targetClasses>
+                        <param>com.nttdata.application.service.*</param>                    </targetClasses>
+                    <targetTests>
+                        <param>com.nttdata.application.service.*Test</param>
+                    </targetTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -138,5 +160,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

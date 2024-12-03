@@ -1,5 +1,6 @@
 package com.nttdata.application.service;
 
+import com.nttdata.application.response.ExchangeRateResponse;
 import com.nttdata.domain.entity.CurrencyBalance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -14,10 +15,10 @@ import java.util.Map;
 public class CurrencyConversionService {
 
     @Value("${currency.api.url}")
-    private String apiUrlTemplate;
+    String apiUrlTemplate;
 
     @Value("${currency.api.key}")
-    private String apiKey;
+    String apiKey;
 
     private final RestTemplate restTemplate;
 

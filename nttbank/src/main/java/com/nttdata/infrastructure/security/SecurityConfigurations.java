@@ -28,6 +28,7 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.POST, "/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .requestMatchers(HttpMethod.POST, "api/users/upload").permitAll()
+                .requestMatchers(HttpMethod.POST, "/accounts").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users/{id}/export").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users/export").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
