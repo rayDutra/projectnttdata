@@ -46,7 +46,7 @@ public class AccountMapper {
         account.setBalance(accountDTO.getBalance());
 
         if (accountDTO.getUserId() != null) {
-            User user = userService.findById(accountDTO.getUserId());  /
+            User user = userService.findById(accountDTO.getUserId());
             account.setUser(user);
         } else {
             throw new IllegalArgumentException("User ID não pode ser nulo");
@@ -56,8 +56,8 @@ public class AccountMapper {
             .orElse(Collections.emptyList());
 
         account.setTransactions(transactionDTOList.stream()
-            .map(transactionDTO -> transactionMapper.toEntity(transactionDTO, account))  // Convertendo de TransactionDTO para Transaction
-            .collect(Collectors.toList()));  // Cria a lista de Transaction
+            .map(transactionDTO -> transactionMapper.toEntity(transactionDTO, account))
+            .collect(Collectors.toList()));
 
         return account;
     }
