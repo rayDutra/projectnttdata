@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class ExcelService {
                 user.setEmail(row.getCell(1).getStringCellValue());
                 user.setLogin(row.getCell(2).getStringCellValue());
                 user.setPassword(row.getCell(3).getStringCellValue());
-                user.setDate(new Date());
+                user.setDate(LocalDateTime.now());
                 users.add(user);
             }
         }

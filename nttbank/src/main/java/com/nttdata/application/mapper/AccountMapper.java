@@ -44,6 +44,7 @@ public class AccountMapper {
         account.setId(accountDTO.getId());
         account.setType(accountDTO.getType());
         account.setBalance(accountDTO.getBalance());
+        account.setNumber(accountDTO.getNumber());
 
         if (accountDTO.getUserId() != null) {
             User user = userService.findById(accountDTO.getUserId());
@@ -83,6 +84,7 @@ public class AccountMapper {
         }
 
         accountDTO.setBalance(account.getBalance());
+        accountDTO.setNumber(account.getNumber());
         accountDTO.setUserId(account.getUser() != null ? account.getUser().getId() : null);
         accountDTO.setCurrencyBalance(currencyBalanceDTO);
         if (account.getTransactions() != null) {

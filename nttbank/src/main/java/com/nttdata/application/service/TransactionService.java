@@ -10,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +46,6 @@ public class TransactionService implements TransactionServiceImpl {
         transaction.setType(transactionDTO.getType());
         transaction.setCategory(transactionDTO.getCategory());
         transaction.setAmount(transactionDTO.getAmount());
-        transaction.setDate(transactionDTO.getDate());
         return transactionRepository.save(transaction);
     }
 
@@ -98,7 +99,7 @@ public class TransactionService implements TransactionServiceImpl {
         }
 
         accountRepository.save(account);
-        transaction.setDate(new Date());
+        transaction.setDate(convertToLocalDateTime(new Date()));
         return transactionRepository.save(transaction);
     }
 
@@ -106,6 +107,12 @@ public class TransactionService implements TransactionServiceImpl {
         if (amount <= 0) {
             throw new IllegalArgumentException("O valor do " + operation + " deve ser maior que zero.");
         }
+    }
+
+    public LocalDateTime convertToLocalDateTime(Date date) {
+        return date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
     }
 }
 

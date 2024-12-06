@@ -4,6 +4,7 @@ import com.nttdata.domain.enums.TransactionCategory;
 import com.nttdata.domain.enums.TransactionType;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Table(name = "transactions")
@@ -21,7 +22,8 @@ public class Transaction {
     private TransactionCategory category;
     private Double amount;
 
-    private Date date;
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -29,7 +31,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(TransactionType type, TransactionCategory category, Double amount, Date date, Account account) {
+    public Transaction(TransactionType type, TransactionCategory category, Double amount, LocalDateTime date, Account account) {
         this.type = type;
         this.category = category;
         this.amount = amount;
@@ -62,11 +64,11 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

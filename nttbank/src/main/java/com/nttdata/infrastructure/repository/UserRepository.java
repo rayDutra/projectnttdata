@@ -20,5 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
         "LEFT JOIN FETCH a.transactions " +
         "WHERE u.id = :id")
     Optional<User> findByIdWithAccountsAndTransactions(@Param("id") Long id);
+
+    @Query("SELECT u FROM User u WHERE u.active = true")
+    Page<User> findAllActive(Pageable pageable);
+
 }
 

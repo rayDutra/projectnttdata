@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Table(name = "users")
@@ -32,7 +33,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private Date date;
+    @Column(nullable = false)
+    private LocalDateTime date = LocalDateTime.now();
 
     private boolean active = true;
 
@@ -41,7 +43,7 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(Long id, String name, String email, String login, String password, Date date) {
+    public User(Long id, String name, String email, String login, String password, LocalDateTime date) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -94,11 +96,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -147,4 +149,9 @@ public class User implements UserDetails {
         }
         return allTransactions;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
 }

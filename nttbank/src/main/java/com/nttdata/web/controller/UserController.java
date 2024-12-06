@@ -76,10 +76,15 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserDTO>> list(Pageable pageable) {
-        Page<User> page = userServiceImpl.findAll(pageable);
+        // Busca apenas usuários ativos
+        Page<User> page = userRepository.findAllActive(pageable);
+
+        // Mapeia para DTO
         Page<UserDTO> dtoPage = page.map(userMapper::toDTO);
+
         return ResponseEntity.ok(dtoPage);
     }
+
 
     @PutMapping("/{id}")
     @Transactional
@@ -92,19 +97,34 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
+        // Busca o usuário pelo ID
         User user = userServiceImpl.findById(id);
+
+        // Desativa o usuário
         user.deactivate();
+
+        // Salva as alterações
         userRepository.save(user);
-        return ResponseEntity.noContent().build();
+
+        // Retorna o usuário atualizado
+        return ResponseEntity.ok(userMapper.toDTO(user));
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserWithDetails(@PathVariable Long id) {
+    public ResponseEntity<?> getUserWithDetails(@PathVariable Long id) {
         User user = userServiceImpl.getUserWithDetails(id);
+
+        if (!user.isActive()) {
+            return ResponseEntity.status(HttpStatus.GONE)
+                .body("Usuário excluído ou desativado");
+        }
+
         UserDTO userDTO = userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
+
 
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportUserTransactionsToExcel(@PathVariable Long id) {

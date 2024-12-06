@@ -31,7 +31,6 @@ public class TransactionDTO {
         this.type = transaction.getType();
         this.category = transaction.getCategory();
         this.amount = transaction.getAmount();
-        this.date = transaction.getDate();
         this.accountId = transaction.getAccount().getId();
     }
 

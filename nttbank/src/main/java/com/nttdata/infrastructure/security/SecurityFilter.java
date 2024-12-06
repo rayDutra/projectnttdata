@@ -24,9 +24,24 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+
+        if (isPermitAllRoute(requestURI, request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         var tokenJWT = recuperarToken(request);
 
-        if (tokenJWT != null) {
+        if (tokenJWT == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token nao informado\"}");
+            response.getWriter().flush();
+            return;
+        }
+
+        try {
             var subject = tokenService.getSubject(tokenJWT);
             var optionalUsuario = repository.findByLogin(subject);
 
@@ -35,11 +50,20 @@ public class SecurityFilter extends OncePerRequestFilter {
                 var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token invalido ou expirado\"}");
+            response.getWriter().flush();
+            return;
         }
 
         filterChain.doFilter(request, response);
     }
-
+    private boolean isPermitAllRoute(String uri, String method) {
+        return (method.equals("POST") && uri.matches("/login|/api/users|/api/users/upload|/accounts"))
+            || (method.equals("GET") && uri.matches("/api/users/(\\d+)/export|/api/users/export|/v3/api-docs.*|/swagger-ui.*"));
+    }
 
     private String recuperarToken(HttpServletRequest request) {
         var authorizationHeader = request.getHeader("Authorization");
@@ -49,5 +73,4 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         return null;
     }
-
-}
+    }

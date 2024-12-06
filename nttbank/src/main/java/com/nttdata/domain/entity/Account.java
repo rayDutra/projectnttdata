@@ -16,6 +16,8 @@ public class Account {
     private AccountType type;
     private Double balance = 0.0;
 
+    private String number;
+
     private boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,20 +33,22 @@ public class Account {
     public Account() {
     }
 
-    public Account(Long id, AccountType type, Double balance, boolean active, User user, List<Transaction> transactions, CurrencyBalance currencyBalance) {
+    public Account(Long id, AccountType type, Double balance, String number, boolean active, User user, List<Transaction> transactions, CurrencyBalance currencyBalance) {
         this.id = id;
         this.type = type;
         this.balance = balance;
+        this.number = number;
         this.active = active;
         this.user = user;
         this.transactions = transactions;
         this.currencyBalance = currencyBalance;
     }
 
-    public Account(Long id, AccountType type, Double balance, boolean active) {
+    public Account(Long id, AccountType type, Double balance, String number,  boolean active) {
         this.id = id;
         this.type = type;
         this.balance = balance;
+        this.number = number;
         this.active = active;
     }
 
@@ -111,5 +115,13 @@ public class Account {
 
     public void deactivate() {
         this.active = false;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 }
