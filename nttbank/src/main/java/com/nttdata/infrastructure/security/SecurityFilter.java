@@ -61,6 +61,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
     private boolean isPermitAllRoute(String uri, String method) {
+        if (method == null) {
+            return false;
+        }
         return (method.equals("POST") && uri.matches("/login|/api/users|/api/users/upload|/accounts"))
             || (method.equals("GET") && uri.matches("/api/users/(\\d+)/export|/api/users/export|/v3/api-docs.*|/swagger-ui.*"));
     }

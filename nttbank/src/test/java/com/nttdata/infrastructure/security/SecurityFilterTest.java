@@ -15,8 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 class SecurityFilterTest {
@@ -71,29 +73,40 @@ class SecurityFilterTest {
     void testDoFilterInternal_InvalidToken() throws ServletException, IOException {
         String token = "invalid-token";
         String subject = "invalidUser";
+        String method = "GET";
+        String uri = "/algum-caminho";
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
+        when(request.getMethod()).thenReturn(method);
+        when(request.getRequestURI()).thenReturn(uri);
         when(tokenService.getSubject(token)).thenReturn(subject);
         when(userRepository.findByLogin(subject)).thenReturn(Optional.empty());
 
         securityFilter.doFilterInternal(request, response, filterChain);
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        assert(authentication == null);
+        assertNull(authentication);
 
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
+
     @Test
     void testDoFilterInternal_NoToken() throws ServletException, IOException {
+        PrintWriter printWriter = mock(PrintWriter.class);
+        when(response.getWriter()).thenReturn(printWriter);
         when(request.getHeader("Authorization")).thenReturn(null);
 
         securityFilter.doFilterInternal(request, response, filterChain);
 
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        assert(authentication == null);
+        verify(filterChain, times(0)).doFilter(request, response);
 
-        verify(filterChain, times(1)).doFilter(request, response);
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNull(authentication);
+
+        verify(printWriter, times(1)).write("{\"error\": \"Token nao informado\"}");  // Espera que a resposta de erro tenha sido escrita
     }
+
+
 }
 

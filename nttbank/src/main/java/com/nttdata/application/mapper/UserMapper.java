@@ -90,6 +90,7 @@ public class UserMapper {
         accountDTO.setId(account.getId());
         accountDTO.setType(account.getType());
         accountDTO.setBalance(account.getBalance());
+        accountDTO.setNumber(account.getNumber());
         accountDTO.setUserId(account.getUser() != null ? account.getUser().getId() : null);
         accountDTO.setCurrencyBalance(currencyBalanceDTO);
 

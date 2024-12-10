@@ -61,7 +61,6 @@ public class TransactionService implements TransactionServiceImpl {
         if (account == null || account.getId() == null) {
             throw new IllegalArgumentException("Conta associada à transação não encontrada.");
         }
-
         switch (transaction.getType()) {
             case DEPOSITO:
                 validatePositiveAmount(transaction.getAmount(), "depósito");

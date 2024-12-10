@@ -33,11 +33,9 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionDTO> createTransaction(@RequestBody TransactionDTO transactionDTO) {
         Account account = accountService.findById(transactionDTO.getAccountId());
-
         if (account == null) {
-            throw new EntityNotFoundException("Conta não encontrada para o ID: " + transactionDTO.getAccountId());
+            throw new EntityNotFoundException("Account not found");
         }
-
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account);
         Transaction processedTransaction = transactionServiceImpl.processTransaction(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionMapper.toDTO(processedTransaction));

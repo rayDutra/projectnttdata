@@ -52,7 +52,7 @@ public class UserServiceTest {
             userService.findById(1L);
         });
 
-        assertEquals("User not found with id: 1", thrown.getMessage());
+        assertEquals("User não encontrada para o ID: 1", thrown.getMessage());
         verify(userRepository, times(1)).findById(1L);
     }
 

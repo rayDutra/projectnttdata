@@ -22,6 +22,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -115,7 +116,9 @@ class ExcelServiceTest {
         transaction1.setCategory(TransactionCategory.OUTROS);
         transaction1.setAmount(100.0);
         transaction1.setType(TransactionType.PIX);
-        transaction1.setDate(new Date());
+        transaction1.setDate(new Date().toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime());
         transaction1.setAccount(account1);
         mockTransactions.add(transaction1);
 
@@ -126,7 +129,9 @@ class ExcelServiceTest {
         transaction2.setCategory(TransactionCategory.ALIMENTAÇAO);
         transaction2.setAmount(50.0);
         transaction2.setType(TransactionType.DEPOSITO);
-        transaction2.setDate(new Date());
+        transaction2.setDate(new Date().toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime());
         transaction2.setAccount(account2);
         mockTransactions.add(transaction2);
 
@@ -165,4 +170,5 @@ class ExcelServiceTest {
             }
         }
     }
+
 }

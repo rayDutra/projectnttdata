@@ -54,31 +54,6 @@ class UserControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
-    @Disabled
-    @Test
-    void testCreateUser() throws Exception {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setLogin("testuser");
-        userDTO.setPassword("password123");
-
-        User user = new User();
-        user.setLogin("testuser");
-        user.setPassword("encodedPassword");
-
-        when(userRepository.findByLogin("testuser")).thenReturn(Optional.empty());
-        when(userMapper.toEntity(userDTO)).thenReturn(user);
-        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
-        when(userRepository.save(user)).thenReturn(user);
-        when(userMapper.toDTO(user)).thenReturn(userDTO);
-
-        mockMvc.perform(post("/api/users")
-                .contentType("application/json")
-                .content("{\"login\":\"testuser\",\"password\":\"password123\"}"))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.login").value("testuser"));
-    }
-
-
 
     @Test
     void testUploadFile() throws Exception {
@@ -118,10 +93,17 @@ class UserControllerTest {
         user.setId(1L);
         user.setLogin("userToDelete");
 
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
+
         when(userServiceImpl.findById(1L)).thenReturn(user);
+        when(userMapper.toDTO(user)).thenReturn(userDTO);
 
         mockMvc.perform(delete("/api/users/1"))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.login").value("userToDelete"));
     }
 
     @Test
@@ -141,28 +123,5 @@ class UserControllerTest {
             .andExpect(jsonPath("$.login").value("testuser"));
     }
 
-    @Disabled
-    @Test
-    void testExportUserTransactionsToExcel() throws Exception {
-        mockMvc.perform(get("/api/users/1/export"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Disposition", "attachment; filename=transactions_report.xlsx"));
-    }
-
-    @Disabled
-    @Test
-    void testExportAllUsersToExcel() throws Exception {
-        User user1 = new User(1L, "User One", "user1@example.com", "user1", "password1", new Date());
-        User user2 = new User(2L, "User Two", "user2@example.com", "user2", "password2", new Date());
-
-        List<User> users = List.of(user1, user2);
-
-        ByteArrayOutputStream excelReport = new ByteArrayOutputStream();
-        when(excelService.generateFullUserReport(users)).thenReturn(excelReport);
-
-        mockMvc.perform(get("/api/users/export"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Disposition", "attachment; filename=users_report.xlsx"));
-    }
 
 }

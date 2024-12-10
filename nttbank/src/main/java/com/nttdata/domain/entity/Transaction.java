@@ -55,7 +55,6 @@ public class Transaction {
         this.type = type;
     }
 
-
     public Double getAmount() {
         return amount;
     }

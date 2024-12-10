@@ -18,7 +18,7 @@ public class UserService implements UserServiceImpl {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+            .orElseThrow(() -> new RuntimeException("User não encontrada para o ID: " + id));
     }
     @Override
     public Page<User> findAll(Pageable pageable) {

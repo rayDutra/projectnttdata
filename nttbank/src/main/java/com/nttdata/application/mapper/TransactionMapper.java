@@ -46,25 +46,21 @@ public class TransactionMapper {
 
         TransactionType type = transactionDTO.getType();
         TransactionCategory category = transactionDTO.getCategory();
-
-        // Converta a data para LocalDateTime, se ela estiver presente no DTO.
         LocalDateTime localDateTime = null;
         if (transactionDTO.getDate() != null) {
             localDateTime = transactionDTO.getDate().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         } else {
-            // Caso a data não esteja presente, use a data atual (padrão do construtor)
             localDateTime = LocalDateTime.now();
         }
 
-        // Criação da entidade Transaction com todos os dados
         return new Transaction(
-            type,               // Tipo da transação
-            category,           // Categoria da transação
-            transactionDTO.getAmount(),  // Valor da transação
-            localDateTime,      // Data da transação
-            account             // Conta associada
+            type,
+            category,
+            transactionDTO.getAmount(),
+            localDateTime,
+            account
         );
     }
 

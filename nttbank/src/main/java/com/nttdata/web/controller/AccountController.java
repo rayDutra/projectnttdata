@@ -38,29 +38,18 @@ public class AccountController {
     public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO) {
         try {
             User user = userService.findById(accountDTO.getUserId());
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Usuário não encontrado");
-            }
-
-            boolean accountExists = accountServiceImpl.existsByUserIdAndType(user.getId(), accountDTO.getType());
-            if (accountExists) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Já existe uma conta do tipo '" + accountDTO.getType() + "' para este usuário.");
-            }
-
             Account savedAccount = accountServiceImpl.save(user, accountDTO);
             AccountDTO accountResponse = accountMapper.toDTO(savedAccount);
             return ResponseEntity.status(HttpStatus.CREATED).body(accountResponse);
-
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Erro: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erro interno ao criar a conta: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao criar a conta.");
         }
     }
+
 
     @GetMapping
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
@@ -92,17 +81,13 @@ public class AccountController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
-            var account = accountServiceImpl.findById(id);
-            if (account == null) {
-                throw new EntityNotFoundException("Conta não encontrada para o ID: " + id);
-            }
             accountServiceImpl.delete(id);
             return ResponseEntity.noContent().build();
-
         } catch (EntityNotFoundException e) {
-            throw e;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException("Erro interno ao excluir a conta", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao excluir a conta.");
         }
     }
+
 }

@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 class TransactionMapperTest {
@@ -32,13 +34,15 @@ class TransactionMapperTest {
     void testToDTO_withValidTransaction() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse("2024-12-02");
-
+        LocalDateTime localDateTime = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
         Transaction transaction = new Transaction();
         transaction.setId(1L);
         transaction.setType(TransactionType.DEPOSITO);
         transaction.setCategory(TransactionCategory.LAZER);
         transaction.setAmount(1000.0);
-        transaction.setDate(date);
+        transaction.setDate(localDateTime);
 
         Account account = new Account();
         account.setId(123L);
@@ -85,11 +89,13 @@ class TransactionMapperTest {
         assertEquals(TransactionType.BOLETO, transaction.getType());
         assertEquals(TransactionCategory.SAUDE, transaction.getCategory());
         assertEquals(500.0, transaction.getAmount());
-        assertEquals(date, transaction.getDate());
+
+        Date transactionDate = Date.from(transaction.getDate().atZone(ZoneId.systemDefault()).toInstant());
+        assertEquals(sdf.format(date), sdf.format(transactionDate));
+
         assertNotNull(transaction.getAccount());
         assertEquals(123L, transaction.getAccount().getId());
     }
-
 
     @Test
     void testToEntity_withNullTransactionDTO_throwsException() {

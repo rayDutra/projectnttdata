@@ -76,12 +76,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserDTO>> list(Pageable pageable) {
-        // Busca apenas usuários ativos
         Page<User> page = userRepository.findAllActive(pageable);
-
-        // Mapeia para DTO
         Page<UserDTO> dtoPage = page.map(userMapper::toDTO);
-
         return ResponseEntity.ok(dtoPage);
     }
 
@@ -98,19 +94,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
-        // Busca o usuário pelo ID
         User user = userServiceImpl.findById(id);
-
-        // Desativa o usuário
         user.deactivate();
-
-        // Salva as alterações
         userRepository.save(user);
-
-        // Retorna o usuário atualizado
         return ResponseEntity.ok(userMapper.toDTO(user));
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserWithDetails(@PathVariable Long id) {
@@ -124,7 +112,6 @@ public class UserController {
         UserDTO userDTO = userMapper.toDTO(user);
         return ResponseEntity.ok(userDTO);
     }
-
 
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportUserTransactionsToExcel(@PathVariable Long id) {

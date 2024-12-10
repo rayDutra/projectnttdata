@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -56,11 +57,11 @@ class UserMapperTest {
         assertEquals("john123", user.getLogin());
         assertEquals("password", user.getPassword());
 
-        LocalDate actualDate = user.getDate().toInstant()
+        LocalDateTime localDateTime = date.toInstant()
             .atZone(ZoneId.systemDefault())
-            .toLocalDate();
+            .toLocalDateTime();
 
-        assertEquals(localDate, actualDate, "A data não coincide!");
+        assertEquals(localDate, localDateTime.toLocalDate(), "A data não coincide!");
     }
 
     @Test
@@ -74,8 +75,11 @@ class UserMapperTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = format.parse(dateString);
+        LocalDateTime localDateTime = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
 
-        User user = new User(1L, "John Doe", "john@example.com", "john123", "password", date);
+        User user = new User(1L, "John Doe", "john@example.com", "john123", "password", localDateTime);
 
         UserDTO userDTO = userMapper.toDTO(user);
 
@@ -101,7 +105,7 @@ class UserMapperTest {
 
     @Test
     void testToAccountDTO_withValidAccount() {
-        Account account = new Account(1L, AccountType.CORRENTE, 1000.0, true);
+        Account account = new Account(1L, AccountType.CORRENTE, 1000.0, "0000-1", true);
 
         CurrencyBalance mockBalance = new CurrencyBalance(1000.0, 200.0, 150.0, 500.0);
         when(currencyConversionService.convertToCurrencyBalance(1000.0, "BRL")).thenReturn(mockBalance);
@@ -112,6 +116,7 @@ class UserMapperTest {
         assertEquals(1L, accountDTO.getId());
         assertEquals(AccountType.CORRENTE, accountDTO.getType());
         assertEquals(1000.0, accountDTO.getBalance());
+        assertEquals("0000-1", accountDTO.getNumber());
         assertNotNull(accountDTO.getCurrencyBalance());
     }
 
@@ -124,10 +129,13 @@ class UserMapperTest {
     void testToTransactionDTO_withValidTransaction() {
         LocalDate localDate = LocalDate.now();
         Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDateTime localDateTime = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
 
         Account account = new Account();
 
-        Transaction transaction = new Transaction(TransactionType.DEPOSITO, TransactionCategory.OUTROS, 2000.0, date, account);
+        Transaction transaction = new Transaction(TransactionType.DEPOSITO, TransactionCategory.OUTROS, 2000.0, localDateTime, account);
 
         TransactionDTO transactionDTO = userMapper.toTransactionDTO(transaction);
 
@@ -136,12 +144,7 @@ class UserMapperTest {
         assertEquals(TransactionCategory.OUTROS, transactionDTO.getCategory());
         assertEquals(2000.0, transactionDTO.getAmount());
 
-        LocalDate transactionDate = transaction.getDate()
-            .toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate();
-
-        assertEquals(localDate, transactionDate, "As datas não coincidem!");
+        assertEquals(localDate, localDateTime.toLocalDate(), "As datas não coincidem!");
     }
 
     @Test
@@ -154,7 +157,10 @@ class UserMapperTest {
         LocalDate localDate = LocalDate.now();
         Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-        User user = new User(1L, "Old Name", "old@example.com", "oldLogin", "oldPassword", date);
+        LocalDateTime localDateTime = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+        User user = new User(1L, "Old Name", "old@example.com", "oldLogin", "oldPassword", localDateTime);
         UserDTO userDTO = new UserDTO(1L, "New Name", "new@example.com", "newLogin", "newPassword", date, null);
 
         userMapper.updateEntityFromDTO(userDTO, user);
@@ -171,7 +177,11 @@ class UserMapperTest {
 
         LocalDate localDate = LocalDate.now();
         Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        User user = new User(1L, "Old Name", "old@example.com", "oldLogin", "oldPassword", date);
+
+        LocalDateTime localDateTime = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+        User user = new User(1L, "Old Name", "old@example.com", "oldLogin", "oldPassword", localDateTime);
 
         userMapper.updateEntityFromDTO(userDTO, user);
 
@@ -179,25 +189,27 @@ class UserMapperTest {
         assertEquals("old@example.com", user.getEmail());
         assertEquals("oldLogin", user.getLogin());
         assertEquals("oldPassword", user.getPassword());
-        assertEquals(date, user.getDate());
+        assertEquals(localDateTime.toLocalDate(), user.getDate().toLocalDate());
     }
+
     @Test
     void testToAccountDTO_withTransactions() {
-        Account account = new Account(1L, AccountType.CORRENTE, 1000.0, true);
-        Transaction transaction1 = new Transaction(TransactionType.DEPOSITO, TransactionCategory.OUTROS, 500.0, new Date(), account);
-        Transaction transaction2 = new Transaction(TransactionType.SAQUE, TransactionCategory.TRANSPORTE, 300.0, new Date(), account);
-
+        Account account = new Account(1L, AccountType.CORRENTE, 1000.0, "0000-1", true);
+        LocalDateTime now = new Date().toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+        Transaction transaction1 = new Transaction(TransactionType.DEPOSITO, TransactionCategory.OUTROS, 500.0, now, account);
+        Transaction transaction2 = new Transaction(TransactionType.SAQUE, TransactionCategory.TRANSPORTE, 300.0, now, account);
         account.setTransactions(List.of(transaction1, transaction2));
-
         CurrencyBalance mockBalance = new CurrencyBalance(1000.0, 200.0, 150.0, 500.0);
         when(currencyConversionService.convertToCurrencyBalance(1000.0, "BRL")).thenReturn(mockBalance);
-
         AccountDTO accountDTO = userMapper.toAccountDTO(account);
 
         assertNotNull(accountDTO);
         assertEquals(1L, accountDTO.getId());
         assertEquals(AccountType.CORRENTE, accountDTO.getType());
         assertEquals(1000.0, accountDTO.getBalance());
+        assertEquals("0000-1", accountDTO.getNumber());
         assertNotNull(accountDTO.getCurrencyBalance());
 
         assertNotNull(accountDTO.getTransactions());
@@ -209,6 +221,7 @@ class UserMapperTest {
         assertEquals(TransactionCategory.TRANSPORTE, accountDTO.getTransactions().get(1).getCategory());
         assertEquals(300.0, accountDTO.getTransactions().get(1).getAmount());
     }
+
 
     @Test
     void testToDTO_withNullUser() {
