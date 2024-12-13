@@ -1,10 +1,10 @@
-package com.nttdata.application.mapper;
+package com.nttdata.infrastructure.mapper;
 
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.enums.TransactionCategory;
 import com.nttdata.domain.enums.TransactionType;
-import com.nttdata.dto.TransactionDTO;
+import com.nttdata.application.dto.TransactionDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

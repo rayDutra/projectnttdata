@@ -1,4 +1,4 @@
-package com.nttdata.application.response;
+package com.nttdata.web.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.stereotype.Component;

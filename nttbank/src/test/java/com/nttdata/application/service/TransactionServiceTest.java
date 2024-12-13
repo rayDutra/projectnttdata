@@ -4,7 +4,7 @@ import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.enums.TransactionCategory;
 import com.nttdata.domain.enums.TransactionType;
-import com.nttdata.dto.TransactionDTO;
+import com.nttdata.application.dto.TransactionDTO;
 import com.nttdata.infrastructure.repository.AccountRepository;
 import com.nttdata.infrastructure.repository.TransactionRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,11 +1,11 @@
 package com.nttdata.web.controller;
 
-import com.nttdata.application.mapper.AccountMapper;
+import com.nttdata.infrastructure.mapper.AccountMapper;
 import com.nttdata.application.service.UserService;
 import com.nttdata.application.service.impls.AccountServiceImpl;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.AccountDTO;
+import com.nttdata.application.dto.AccountDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

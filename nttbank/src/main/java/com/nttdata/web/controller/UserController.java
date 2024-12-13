@@ -1,11 +1,11 @@
 package com.nttdata.web.controller;
 
-import com.nttdata.application.mapper.UserMapper;
+import com.nttdata.infrastructure.mapper.UserMapper;
 import com.nttdata.application.service.ExcelService;
 import com.nttdata.application.service.impls.UserServiceImpl;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.UserDTO;
+import com.nttdata.application.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
@@ -61,17 +61,16 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, UriComponentsBuilder uriBuilder) {
-        userRepository.findByLogin(userDTO.getLogin())
-            .ifPresent(user -> {
-                throw new RuntimeException("O login já está em uso.");
-            });
+        try {
+            User savedUser = userServiceImpl.createUser(userDTO);
 
-        User user = userMapper.toEntity(userDTO);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
-
-        var uri = uriBuilder.path("/api/users/{id}").buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(uri).body(userMapper.toDTO(savedUser));
+            var uri = uriBuilder.path("/api/users/{id}").buildAndExpand(savedUser.getId()).toUri();
+            return ResponseEntity.created(uri).body(userMapper.toDTO(savedUser));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     @GetMapping

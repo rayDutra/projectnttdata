@@ -1,6 +1,4 @@
-package com.nttdata.dto;
-
-import com.nttdata.domain.entity.User;
+package com.nttdata.application.dto;
 
 import java.util.Date;
 import java.util.List;
@@ -8,8 +6,8 @@ import java.util.List;
 public class UserDTO {
     private Long id;
     private String name;
-    private String email;
 
+    private String email;
     private String login;
     private String password;
     private Date date;

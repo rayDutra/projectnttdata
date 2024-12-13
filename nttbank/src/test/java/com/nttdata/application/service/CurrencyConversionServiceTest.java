@@ -1,6 +1,6 @@
 package com.nttdata.application.service;
 
-import com.nttdata.application.response.ExchangeRateResponse;
+import com.nttdata.web.response.ExchangeRateResponse;
 import com.nttdata.domain.entity.CurrencyBalance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

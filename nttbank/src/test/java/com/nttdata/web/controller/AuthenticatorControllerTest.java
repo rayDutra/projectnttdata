@@ -1,7 +1,7 @@
 package com.nttdata.web.controller;
 
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.UserDTO;
+import com.nttdata.application.dto.UserDTO;
 import com.nttdata.infrastructure.security.TokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.nttdata.web.controller;
 
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.UserDTO;
+import com.nttdata.application.dto.UserDTO;
 import com.nttdata.infrastructure.security.TokenJWT;
 import com.nttdata.infrastructure.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.nttdata.application.service.impls;
 
 import com.nttdata.domain.entity.Transaction;
-import com.nttdata.dto.TransactionDTO;
+import com.nttdata.application.dto.TransactionDTO;
 
 import java.util.List;
 

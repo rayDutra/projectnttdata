@@ -1,4 +1,4 @@
-package com.nttdata.dto;
+package com.nttdata.application.dto;
 
 import com.nttdata.domain.enums.AccountType;
 

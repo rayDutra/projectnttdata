@@ -1,4 +1,4 @@
-package com.nttdata.infrastructure.exceptions;
+package com.nttdata.application.exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;

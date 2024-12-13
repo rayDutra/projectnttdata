@@ -1,4 +1,4 @@
-package com.nttdata.application.mapper;
+package com.nttdata.infrastructure.mapper;
 import java.util.Date;
 import java.time.ZoneId;
 
@@ -7,16 +7,15 @@ import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.CurrencyBalance;
 import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.CurrencyBalanceDTO;
-import com.nttdata.dto.TransactionDTO;
-import com.nttdata.dto.UserDTO;
-import com.nttdata.dto.AccountDTO;
+import com.nttdata.application.dto.CurrencyBalanceDTO;
+import com.nttdata.application.dto.TransactionDTO;
+import com.nttdata.application.dto.UserDTO;
+import com.nttdata.application.dto.AccountDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.stream.Collectors;
 
 @Component

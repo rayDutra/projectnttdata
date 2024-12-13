@@ -1,13 +1,12 @@
 package com.nttdata.web.controller;
 
-import com.nttdata.application.mapper.UserMapper;
+import com.nttdata.infrastructure.mapper.UserMapper;
 import com.nttdata.application.service.ExcelService;
 import com.nttdata.application.service.impls.UserServiceImpl;
 import com.nttdata.domain.entity.User;
-import com.nttdata.dto.UserDTO;
+import com.nttdata.application.dto.UserDTO;
 import com.nttdata.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,11 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;

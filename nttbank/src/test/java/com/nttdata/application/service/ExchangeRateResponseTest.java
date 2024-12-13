@@ -1,6 +1,6 @@
 package com.nttdata.application.service;
 
-import com.nttdata.application.response.ExchangeRateResponse;
+import com.nttdata.web.response.ExchangeRateResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

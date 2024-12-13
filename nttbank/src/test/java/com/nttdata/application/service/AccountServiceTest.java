@@ -1,10 +1,10 @@
 package com.nttdata.application.service;
 
-import com.nttdata.application.mapper.AccountMapper;
+import com.nttdata.infrastructure.mapper.AccountMapper;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
-import com.nttdata.dto.AccountDTO;
+import com.nttdata.application.dto.AccountDTO;
 import com.nttdata.infrastructure.repository.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,15 +1,14 @@
-package com.nttdata.application.mapper;
+package com.nttdata.infrastructure.mapper;
 
 import com.nttdata.application.service.CurrencyConversionService;
 import com.nttdata.application.service.UserService;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.CurrencyBalance;
-import com.nttdata.domain.entity.Transaction;
 import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
-import com.nttdata.dto.AccountDTO;
-import com.nttdata.dto.CurrencyBalanceDTO;
-import com.nttdata.dto.TransactionDTO;
+import com.nttdata.application.dto.AccountDTO;
+import com.nttdata.application.dto.CurrencyBalanceDTO;
+import com.nttdata.application.dto.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

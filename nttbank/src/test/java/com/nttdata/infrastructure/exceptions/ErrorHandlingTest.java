@@ -1,5 +1,6 @@
 package com.nttdata.infrastructure.exceptions;
 
+import com.nttdata.application.exceptions.ErrorHandling;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

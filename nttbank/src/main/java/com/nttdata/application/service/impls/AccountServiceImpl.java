@@ -3,7 +3,7 @@ package com.nttdata.application.service.impls;
 import com.nttdata.domain.entity.Account;
 import com.nttdata.domain.entity.User;
 import com.nttdata.domain.enums.AccountType;
-import com.nttdata.dto.AccountDTO;
+import com.nttdata.application.dto.AccountDTO;
 
 import java.util.List;
 
