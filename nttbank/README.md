@@ -9,11 +9,8 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
 1. [Funcionalidades Principais](#funcionalidades-principais)  
 2. [Tecnologias Utilizadas](#tecnologias-utilizadas)  
 3. [Pré-requisitos](#pré-requisitos)  
-4. [Configuração do Ambiente](#configuração-do-ambiente)  
-5. [Como Usar](#como-usar)  
-6. [Estrutura do Projeto](#estrutura-do-projeto)  
-7. [Testes](#testes)  
-8. [Documentação da API](#documentação-da-api)  
+4. [Configuração do Ambiente](#configuração-do-ambiente)
+5. [Documentação da API](#documentação-da-api)  
 
 ---
 
@@ -51,4 +48,13 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
    ```bash
    git clone https://github.com/rayDutra/projectnttdata.git
    cd nttbank
+
+---
+
+## Documentação da API
+1. Swagger UI: Interface gráfica para explorar os endpoints da API.
+URL: http://localhost:8080/swagger-ui.html
+
+2. API Docs: Documentação JSON para integração com ferramentas externas.
+URL: http://localhost:8080/v3/api-docs
 
