@@ -32,10 +32,8 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
 - **Java** com Spring Boot
 - **Spring Security**
 - **Spring Data JPA** com PostgreSQL
-- **Flyway** para migrações de banco de dados
 - **Docker** e **Docker Compose**
 - **Springdoc OpenAPI**
-- **Lombok** para simplificação de código
 - **Apache POI** para manipulação de arquivos Excel
 - **Junit 5** e **Mockito** para testes
 
