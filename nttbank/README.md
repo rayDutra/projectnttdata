@@ -51,6 +51,6 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
 ## Configuração do Ambiente
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/rayDutra/projectnttdata.git
+   cd nttbank
 
