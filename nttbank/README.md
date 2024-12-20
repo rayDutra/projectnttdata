@@ -11,7 +11,7 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
 3. [Pré-requisitos](#pré-requisitos)  
 4. [Configuração do Ambiente](#configuração-do-ambiente)
 5. [Documentação da API](#documentação-da-api)  
-
+6. [Arquitetura Utilizada](#arquitetura-utilizada)  
 ---
 
 ## Funcionalidades Principais
@@ -32,7 +32,7 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
 - **Docker** e **Docker Compose**
 - **Springdoc OpenAPI**
 - **Apache POI** para manipulação de arquivos Excel
-- **Junit 5** e **Mockito** para testes
+- **Junit 5** **Mockito** **Pitest** para testes
 
 ---
 
@@ -49,6 +49,10 @@ Aplicação para gerenciar transações financeiras, como depósitos, retiradas 
    git clone https://github.com/rayDutra/projectnttdata.git
    cd nttbank
 
+2. Executar testes com Pitest
+   ```bash
+   mvn clean test org.pitest:pitest-maven:mutationCoverage
+
 ---
 
 ## Documentação da API
@@ -58,3 +62,11 @@ URL: http://localhost:8080/swagger-ui.html
 2. API Docs: Documentação JSON para integração com ferramentas externas.
 URL: http://localhost:8080/v3/api-docs
 
+## Arquitetura Utilizada
+
+A aplicação segue uma arquitetura em camadas, garantindo uma separação clara de responsabilidades, o que facilita a manutenção, escalabilidade e testabilidade do sistema. As camadas são organizadas da seguinte forma:
+
+- **Camada de Apresentação (Web):**: Contém os controladores REST (controllers) que recebem e respondem às requisições HTTP.
+- **Camada de Aplicação (Application):**: Implementação da lógica de negócios, validações e orquestração entre as entidades e o banco de dados. Inclui serviços e mapeadores de dados (DTOs).
+- **Camada de Domínio (Domain):**: Contém as entidades do sistema e as regras de negócios mais fundamentais. As entidades representam as tabelas do banco de dados e possuem a lógica relacionada ao negócio.
+- **Camada de Infraestrutura (Infrastructure):**: Implementação das interações com sistemas externos, como APIs e bancos de dados, além de configurações e utilitários auxiliares.
